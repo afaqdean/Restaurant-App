@@ -3,6 +3,7 @@
 import { useCart } from "@/contexts/CartContext";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { ItemCustomizationModal } from "@/components/ui/ItemCustomizationModal";
 import { CartItemWithDetails } from "@/types/cart";
@@ -128,9 +129,11 @@ export default function CartPage() {
                 <div className="space-y-6">
                   {state.cart.items.map((item) => (
                     <div key={item.itemId} className="flex items-start space-x-4 border-b pb-6 last:border-b-0">
-                      <img
+                      <Image
                         src={item.item.image || "/images/placeholder.jpg"}
                         alt={item.item.name}
+                        width={80}
+                        height={80}
                         className="w-20 h-20 object-cover rounded-lg"
                       />
                       

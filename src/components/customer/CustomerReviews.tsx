@@ -121,7 +121,7 @@ export default function CustomerReviews() {
                   What Our Customers Say
                 </h2>
                 <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
-                  Don't just take our word for it - hear from our satisfied customers
+                  Don&apos;t just take our word for it - hear from our satisfied customers
                 </p>
               </div>
 
@@ -153,7 +153,7 @@ export default function CustomerReviews() {
 
                   {/* Review Text */}
                   <blockquote className="text-2xl md:text-3xl text-white mb-12 leading-relaxed font-medium">
-                    "{currentReview.comment}"
+                    &quot;{currentReview.comment}&quot;
                   </blockquote>
 
                   {/* Customer Info */}
