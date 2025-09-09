@@ -102,6 +102,7 @@ model ItemOption {
 }
 
 enum OrderStatus {
+  CART
   PENDING
   ACCEPTED
   IN_KITCHEN
