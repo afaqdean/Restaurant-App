@@ -1,5 +1,5 @@
 import { Category } from "@/types/menu";
-import { MenuItemCard } from "../MenuItemCard";
+import { MenuItemCard } from "./MenuItemCard";
 
 interface MenuCategorySliderProps {
   category: Category;

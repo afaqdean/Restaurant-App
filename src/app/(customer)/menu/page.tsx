@@ -1,14 +1,13 @@
 "use client";
 
 import { useMenuPage } from "@/hooks/useMenuPage";
-import ItemDetailModal from "@/components/customer/ItemDetailModal";
+import { ItemCustomizationModal } from "@/components/ui/ItemCustomizationModal";
+import { PageLoadingState, PageErrorState } from "@/components/ui/StandardStates";
 import {
   MenuHero,
   MenuFilters,
   MenuCategorySlider,
   MenuEmptyState,
-  MenuLoadingState,
-  MenuErrorState,
 } from "@/components/customer/menu";
 
 
@@ -40,11 +39,16 @@ export default function MenuPage() {
   } = useMenuPage();
 
   if (loading) {
-    return <MenuLoadingState />;
+    return <PageLoadingState message="Loading menu..." />;
   }
 
   if (error || !menuData) {
-    return <MenuErrorState error={error} onRetry={refetch} />;
+    return (
+      <PageErrorState 
+        message={error?.message || "Failed to load menu"} 
+        onRetry={refetch} 
+      />
+    );
   }
 
   return (
@@ -83,7 +87,7 @@ export default function MenuPage() {
       )}
 
       {/* Item Detail Modal */}
-      <ItemDetailModal
+      <ItemCustomizationModal
         item={selectedItem}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
