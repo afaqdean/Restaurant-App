@@ -2,7 +2,7 @@
 
 import { useMenuPage } from "@/hooks/useMenuPage";
 import { ItemCustomizationModal } from "@/components/ui/ItemCustomizationModal";
-import { PageLoadingState, PageErrorState } from "@/components/ui/StandardStates";
+import { PageWrapper, PageStateHandler } from "@/components/ui/layout";
 import {
   MenuHero,
   MenuFilters,
@@ -38,27 +38,30 @@ export default function MenuPage() {
     refetch,
   } = useMenuPage();
 
-  if (loading) {
-    return <PageLoadingState message="Loading menu..." />;
-  }
-
-  if (error || !menuData) {
-    return (
-      <PageErrorState 
-        message={error?.message || "Failed to load menu"} 
-        onRetry={refetch} 
-      />
-    );
-  }
+  const emptyState = !menuData || filteredCategories.length === 0 ? (
+    <MenuEmptyState 
+      searchQuery={searchQuery}
+      selectedCategory={selectedCategory}
+      onClearFilters={clearFilters} 
+    />
+  ) : null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <PageWrapper>
+      <PageStateHandler
+        loading={loading}
+        error={error?.message || null}
+        loadingMessage="Loading menu..."
+        onRetry={refetch}
+        showEmptyState={!menuData || filteredCategories.length === 0}
+        emptyState={emptyState}
+      >
       <MenuHero />
       
       <MenuFilters
         searchQuery={searchQuery}
         selectedCategory={selectedCategory}
-        categories={menuData.categories}
+        categories={menuData!.categories}
         onSearchChange={handleSearchChange}
         onCategoryChange={handleCategoryChange}
       />
@@ -92,6 +95,7 @@ export default function MenuPage() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
       />
-    </div>
+      </PageStateHandler>
+    </PageWrapper>
   );
 }

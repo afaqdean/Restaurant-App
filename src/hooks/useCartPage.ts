@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useSession } from "next-auth/react";

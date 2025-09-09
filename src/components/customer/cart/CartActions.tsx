@@ -1,21 +1,21 @@
 import Link from "next/link";
 import { ArrowRight, Trash2, ShoppingCart } from "lucide-react";
-
-interface CartActionsProps {
-  isAuthenticated: boolean;
-  onClearCart: () => void;
-}
+import { PrimaryButton, SecondaryButton } from "@/components/ui/buttons";
+import { CartActionsProps } from "@/types/customer-components";
 
 export function CartActions({ isAuthenticated, onClearCart }: CartActionsProps) {
   return (
     <div className="space-y-4">
       {isAuthenticated ? (
-        <Link
-          href="/checkout"
-          className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 px-6 rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 text-center block font-semibold text-lg shadow-lg hover:shadow-xl group"
-        >
-          Proceed to Checkout
-          <ArrowRight className="w-5 h-5 ml-2 inline group-hover:translate-x-1 transition-transform duration-200" />
+        <Link href="/checkout">
+          <PrimaryButton 
+            size="lg" 
+            fullWidth 
+            icon={<ArrowRight className="w-5 h-5" />}
+            className="shadow-lg hover:shadow-xl"
+          >
+            Proceed to Checkout
+          </PrimaryButton>
         </Link>
       ) : (
         <div className="space-y-4">
@@ -32,17 +32,15 @@ export function CartActions({ isAuthenticated, onClearCart }: CartActionsProps) 
               You need to sign in or create an account to proceed with checkout.
             </p>
             <div className="space-y-3">
-              <Link
-                href="/auth/signin?callbackUrl=/checkout"
-                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 px-4 rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 text-center block text-sm font-semibold"
-              >
-                Sign In
+              <Link href="/auth/signin?callbackUrl=/checkout">
+                <PrimaryButton size="sm" fullWidth>
+                  Sign In
+                </PrimaryButton>
               </Link>
-              <Link
-                href="/auth/signup?callbackUrl=/checkout"
-                className="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 hover:border-emerald-300 transition-all duration-300 text-center block text-sm font-semibold"
-              >
-                Create Account
+              <Link href="/auth/signup?callbackUrl=/checkout">
+                <SecondaryButton size="sm" fullWidth>
+                  Create Account
+                </SecondaryButton>
               </Link>
             </div>
           </div>
@@ -50,24 +48,28 @@ export function CartActions({ isAuthenticated, onClearCart }: CartActionsProps) 
       )}
       
       <div className="space-y-3">
-        <button
+        <SecondaryButton
           type="button"
           onClick={(e) => {
             e.preventDefault();
             onClearCart();
           }}
-          className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors font-medium flex items-center justify-center"
+          variant="ghost"
+          fullWidth
+          icon={<Trash2 className="w-4 h-4" />}
+          iconPosition="left"
         >
-          <Trash2 className="w-4 h-4 mr-2" />
           Clear Cart
-        </button>
+        </SecondaryButton>
         
-        <Link
-          href="/menu"
-          className="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 hover:border-emerald-300 transition-all duration-300 font-medium flex items-center justify-center"
-        >
-          <ShoppingCart className="w-4 h-4 mr-2" />
-          Continue Shopping
+        <Link href="/menu">
+          <SecondaryButton
+            fullWidth
+            icon={<ShoppingCart className="w-4 h-4" />}
+            iconPosition="left"
+          >
+            Continue Shopping
+          </SecondaryButton>
         </Link>
       </div>
     </div>

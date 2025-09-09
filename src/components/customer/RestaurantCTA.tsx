@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons'
 
 export default function RestaurantCTA() {
   return (
@@ -14,18 +15,31 @@ export default function RestaurantCTA() {
             </p>
             <div className="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center space-y-4 sm:space-y-0 sm:space-x-4" data-aos="fade-up" data-aos-delay="200">
               <div>
-                <Link className="btn-sm w-full inline-flex items-center text-white bg-gradient-to-tr from-emerald-500 hover:bg-emerald-600 group shadow-xs" href="/menu">
-                  Start Ordering
-                  <span className="tracking-normal text-emerald-100 group-hover:translate-x-0.5 transition-transform duration-150 ease-in-out ml-2">
-                    <svg className="fill-current" width="12" height="10" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 6.002h7.586L6.293 8.295a1 1 0 1 0 1.414 1.414l4-4a1 1 0 0 0 0-1.416l-4-4a1 1 0 0 0-1.414 1.416l2.293 2.293H1a1 1 0 1 0 0 2Z" />
-                    </svg>
-                  </span>
+                <Link href="/menu">
+                  <PrimaryButton 
+                    size="sm" 
+                    fullWidth 
+                    icon={
+                      <svg className="fill-current" width="12" height="10" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 6.002h7.586L6.293 8.295a1 1 0 1 0 1.414 1.414l4-4a1 1 0 0 0 0-1.416l-4-4a1 1 0 0 0-1.414 1.416l2.293 2.293H1a1 1 0 1 0 0 2Z" />
+                      </svg>
+                    }
+                    className="shadow-xs"
+                  >
+                    Start Ordering
+                  </PrimaryButton>
                 </Link>
               </div>
               <div>
-                <Link className="btn-sm w-full inline-flex items-center text-gray-900 bg-gray-100 hover:bg-gray-200 group shadow-xs" href="/cart">
-                  View Cart
+                <Link href="/cart">
+                  <SecondaryButton 
+                    size="sm" 
+                    variant="ghost" 
+                    fullWidth 
+                    className="shadow-xs"
+                  >
+                    View Cart
+                  </SecondaryButton>
                 </Link>
               </div>
             </div>

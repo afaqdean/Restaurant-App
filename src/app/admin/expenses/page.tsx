@@ -10,6 +10,7 @@ import {
   Expense
 } from "@/hooks/useExpenses";
 import { ExpenseForm } from "@/components/admin/ExpenseForm";
+import { LoadingState } from "@/components/ui/StandardStates";
 
 export default function AdminExpensesPage() {
   const [showForm, setShowForm] = useState(false);
@@ -231,11 +232,7 @@ export default function AdminExpensesPage() {
 
         {isLoading ? (
           <div className="p-6">
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-16 bg-gray-200 rounded animate-pulse"></div>
-              ))}
-            </div>
+            <LoadingState message="Loading expenses..." size="md" />
           </div>
         ) : expenses.length === 0 ? (
           <div className="p-6 text-center">

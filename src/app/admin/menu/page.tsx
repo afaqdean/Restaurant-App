@@ -16,6 +16,7 @@ import {
 } from "@/hooks/useMenuManagement";
 import { CategoryForm } from "@/components/admin/CategoryForm";
 import { ItemForm } from "@/components/admin/ItemForm";
+import { LoadingState } from "@/components/ui/StandardStates";
 
 export default function AdminMenuPage() {
   const [activeTab, setActiveTab] = useState<"categories" | "items">("categories");
@@ -159,11 +160,7 @@ export default function AdminMenuPage() {
           )}
 
           {categoriesLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 rounded-lg animate-pulse"></div>
-              ))}
-            </div>
+            <LoadingState message="Loading categories..." size="md" />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {categories.map((category) => (
@@ -256,11 +253,7 @@ export default function AdminMenuPage() {
           )}
 
           {itemsLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-48 bg-gray-200 rounded-lg animate-pulse"></div>
-              ))}
-            </div>
+            <LoadingState message="Loading items..." size="md" />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {items.map((item) => (

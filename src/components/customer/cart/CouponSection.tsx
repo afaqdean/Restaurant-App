@@ -1,14 +1,5 @@
-interface CouponSectionProps {
-  couponCode: string;
-  onCouponCodeChange: (code: string) => void;
-  onApplyCoupon: () => void;
-  appliedCoupon?: {
-    code: string;
-    discount: number;
-  };
-  onRemoveCoupon: () => void;
-  formatPrice: (cents: number) => string;
-}
+import { PrimaryButton, CartActionButton } from "@/components/ui/buttons";
+import { CouponSectionProps } from "@/types/customer-components";
 
 export function CouponSection({
   couponCode,
@@ -31,16 +22,17 @@ export function CouponSection({
           placeholder="Enter coupon code"
           className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
         />
-        <button
+        <PrimaryButton
           type="button"
           onClick={(e) => {
             e.preventDefault();
             onApplyCoupon();
           }}
-          className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 text-sm font-medium transition-all duration-300 shadow-md hover:shadow-lg"
+          size="sm"
+          className="shadow-md hover:shadow-lg"
         >
           Apply
-        </button>
+        </PrimaryButton>
       </div>
       
       {appliedCoupon && (
@@ -49,16 +41,18 @@ export function CouponSection({
             <span className="text-sm font-semibold text-emerald-800">
               {appliedCoupon.code} applied
             </span>
-            <button
+            <CartActionButton
               type="button"
               onClick={(e) => {
                 e.preventDefault();
                 onRemoveCoupon();
               }}
-              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium hover:underline"
+              action="remove"
+              variant="text"
+              size="sm"
             >
               Remove
-            </button>
+            </CartActionButton>
           </div>
           <p className="text-sm font-bold text-emerald-600">
             -{formatPrice(appliedCoupon.discount)}

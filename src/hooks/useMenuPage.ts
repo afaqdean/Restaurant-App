@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useMenu } from "./useMenu";
-import { useAddToCart } from "./useCart";
+import { useCart } from "@/contexts/CartContext";
 import { MenuItem } from "@/types/menu";
 
 export function useMenuPage() {
@@ -15,8 +15,8 @@ export function useMenuPage() {
   // Use React Query to fetch menu data
   const { data: menuData, isLoading: loading, error, refetch } = useMenu();
 
-  // Use cart mutation
-  const addToCartMutation = useAddToCart();
+  // Use cart context
+  const { addToCart, state: cartState } = useCart();
 
   // Filter and search logic
   const filteredCategories = useMemo(() => {
@@ -56,10 +56,7 @@ export function useMenuPage() {
 
   const handleAddToCart = async (item: MenuItem) => {
     try {
-      await addToCartMutation.mutateAsync({
-        itemId: item.id,
-        quantity: 1,
-      });
+      await addToCart(item.id, 1);
     } catch (error) {
       console.error("Failed to add to cart:", error);
       throw error;
@@ -131,7 +128,7 @@ export function useMenuPage() {
     isModalOpen,
     loading,
     error,
-    addingToCart: addToCartMutation.isPending,
+    addingToCart: cartState.loading,
 
     // Actions
     handleAddToCart,

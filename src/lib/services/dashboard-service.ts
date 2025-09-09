@@ -74,7 +74,9 @@ export class DashboardService {
     // Calculate today's metrics
     const todaysOrders = todaysOrdersData.length;
     const todaysRevenue = todaysOrdersData.reduce((sum, order) => {
-      return sum + (order.payments.length > 0 ? order.total : 0);
+      return (
+        sum + (order.payments && order.payments.length > 0 ? order.total : 0)
+      );
     }, 0);
 
     // Calculate payment method splits for today
@@ -88,19 +90,25 @@ export class DashboardService {
     const todaysStripeRevenue = todaysOrdersData
       .filter((order) => order.paymentMethod === "CARD")
       .reduce((sum, order) => {
-        return sum + (order.payments.length > 0 ? order.total : 0);
+        return (
+          sum + (order.payments && order.payments.length > 0 ? order.total : 0)
+        );
       }, 0);
 
     const todaysCodRevenue = todaysOrdersData
       .filter((order) => order.paymentMethod === "COD")
       .reduce((sum, order) => {
-        return sum + (order.payments.length > 0 ? order.total : 0);
+        return (
+          sum + (order.payments && order.payments.length > 0 ? order.total : 0)
+        );
       }, 0);
 
     // Calculate overall metrics
     const totalOrders = completedOrdersData.length;
     const totalRevenue = completedOrdersData.reduce((sum, order) => {
-      return sum + (order.payments.length > 0 ? order.total : 0);
+      return (
+        sum + (order.payments && order.payments.length > 0 ? order.total : 0)
+      );
     }, 0);
 
     const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
@@ -116,13 +124,17 @@ export class DashboardService {
     const stripeRevenue = completedOrdersData
       .filter((order) => order.paymentMethod === "CARD")
       .reduce((sum, order) => {
-        return sum + (order.payments.length > 0 ? order.total : 0);
+        return (
+          sum + (order.payments && order.payments.length > 0 ? order.total : 0)
+        );
       }, 0);
 
     const codRevenue = completedOrdersData
       .filter((order) => order.paymentMethod === "COD")
       .reduce((sum, order) => {
-        return sum + (order.payments.length > 0 ? order.total : 0);
+        return (
+          sum + (order.payments && order.payments.length > 0 ? order.total : 0)
+        );
       }, 0);
 
     return {

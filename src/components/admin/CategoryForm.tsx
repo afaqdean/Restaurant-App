@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,6 +10,8 @@ const categorySchema = z.object({
   image: z.string().optional(),
   sortOrder: z.number().min(0).default(0),
 });
+
+type CategoryFormData = z.infer<typeof categorySchema>;
 
 interface CategoryFormProps {
   initialData?: Partial<CreateCategoryData & UpdateCategoryData>;
@@ -33,11 +34,16 @@ export function CategoryForm({
     formState: { errors },
   } = useForm({
     resolver: zodResolver(categorySchema),
-    defaultValues: initialData,
+    defaultValues: {
+      name: initialData?.name || '',
+      description: initialData?.description || '',
+      image: initialData?.image || '',
+      sortOrder: initialData?.sortOrder || 0,
+    },
   });
 
-  const handleFormSubmit = (data: any) => {
-    onSubmit(data);
+  const handleFormSubmit = (data: Record<string, unknown>) => {
+    onSubmit(data as CategoryFormData);
   };
 
   return (

@@ -8,8 +8,8 @@ import { cookies } from "next/headers";
 /**
  * Get or create session ID for anonymous users
  */
-function getSessionId(): string {
-  const cookieStore = cookies();
+async function getSessionId(): Promise<string> {
+  const cookieStore = await cookies();
   let sessionId = cookieStore.get("cart_session")?.value;
 
   if (!sessionId) {
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       );
     } else {
       // Anonymous user
-      const sessionId = getSessionId();
+      const sessionId = await getSessionId();
       cart = await cartService.applyCoupon(
         undefined,
         sessionId,
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!session?.user?.id) {
-      const sessionId = getSessionId();
+      const sessionId = await getSessionId();
       response.cookies.set("cart_session", sessionId, {
         path: "/",
         maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -157,7 +157,7 @@ export async function DELETE(request: NextRequest) {
       cart = await cartService.removeCoupon(session.user.id, undefined);
     } else {
       // Anonymous user
-      const sessionId = getSessionId();
+      const sessionId = await getSessionId();
       cart = await cartService.removeCoupon(undefined, sessionId);
     }
 
@@ -170,7 +170,7 @@ export async function DELETE(request: NextRequest) {
     });
 
     if (!session?.user?.id) {
-      const sessionId = getSessionId();
+      const sessionId = await getSessionId();
       response.cookies.set("cart_session", sessionId, {
         path: "/",
         maxAge: 30 * 24 * 60 * 60, // 30 days

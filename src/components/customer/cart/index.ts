@@ -1,5 +1,4 @@
 // Cart page components
-export { CartHero } from "./CartHero";
 export { CartItemCard } from "./CartItemCard";
 export { CartItemsList } from "./CartItemsList";
 export { CouponSection } from "./CouponSection";

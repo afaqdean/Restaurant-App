@@ -81,7 +81,7 @@ export const checkoutSchema = z.object({
     .min(1, "Phone number is required")
     .max(20, "Phone number too long"),
   paymentMethod: z.enum(["CARD", "COD"], {
-    errorMap: () => ({ message: "Payment method must be CARD or COD" }),
+    message: "Payment method must be CARD or COD",
   }),
   notes: z
     .string()
@@ -106,7 +106,7 @@ export const updateOrderStatusSchema = z.object({
   status: z.enum(
     ["PENDING", "ACCEPTED", "IN_KITCHEN", "READY", "COMPLETED", "CANCELLED"],
     {
-      errorMap: () => ({ message: "Invalid order status" }),
+      message: "Invalid order status",
     }
   ),
 });

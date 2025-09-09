@@ -61,10 +61,32 @@ export async function GET(
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
-    // Generate PDF receipt
-    const pdfBuffer = await receiptService.generateReceiptPDF(order);
+    // Transform order data to match OrderWithDetails interface
+    const orderWithDetails = {
+      ...order,
+      items: order.items.map((item) => ({
+        ...item,
+        notes: item.notes ?? undefined,
+        item: {
+          ...item.item,
+          description: item.item.description ?? undefined,
+        },
+      })),
+      coupons:
+        order.coupons?.map((coupon) => ({
+          ...coupon,
+          coupon: {
+            id: coupon.couponId,
+            code: "UNKNOWN", // This would need to be fetched from the database
+            type: "FIXED",
+          },
+        })) || [],
+    };
 
-    return new NextResponse(pdfBuffer, {
+    // Generate PDF receipt
+    const pdfBuffer = await receiptService.generateReceiptPDF(orderWithDetails);
+
+    return new NextResponse(pdfBuffer as BodyInit, {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="receipt-${order.orderNumber}.pdf"`,

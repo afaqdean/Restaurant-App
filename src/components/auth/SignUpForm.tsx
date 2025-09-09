@@ -8,7 +8,7 @@ import { AuthFormLink } from "./AuthFormLink";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { SignUpFormData } from "@/types";
 import { handleSignUp, validatePasswordsMatch, buildSignInUrl } from "@/utils";
-import { FORM_LABELS, FORM_PLACEHOLDERS, AUTH_MESSAGES, AUTH_LINKS } from "@/constants";
+import { FORM_LABELS, FORM_PLACEHOLDERS, AUTH_MESSAGES, AUTH_LINKS } from "@/constants/auth";
 
 export function SignUpForm() {
   const router = useRouter();

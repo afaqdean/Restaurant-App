@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ReceiptButton } from "@/components/ui/ReceiptButton";
+import { PageLoadingState, PageErrorState } from "@/components/ui/StandardStates";
 
 interface Order {
   id: string;
@@ -135,34 +136,15 @@ export default function AdminOrdersPage() {
   }, [statusFilter, paymentMethodFilter]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading orders...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <PageLoadingState message="Loading orders..." />;
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <h2 className="text-lg font-semibold text-red-800 mb-2">Error</h2>
-            <p className="text-red-600">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      </div>
+      <PageErrorState 
+        message={error} 
+        onRetry={() => window.location.reload()} 
+      />
     );
   }
 

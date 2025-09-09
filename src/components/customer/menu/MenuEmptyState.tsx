@@ -1,9 +1,5 @@
-interface MenuEmptyStateProps {
-  searchQuery: string;
-  selectedCategory: string;
-  onClearFilters: () => void;
-  className?: string;
-}
+import { PrimaryButton } from "@/components/ui/buttons";
+import { MenuEmptyStateProps } from "@/types/customer-components";
 
 export function MenuEmptyState({
   searchQuery,
@@ -32,14 +28,14 @@ export function MenuEmptyState({
             }
           </p>
           {hasFilters && (
-            <button
+            <PrimaryButton
               onClick={onClearFilters}
-              className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 shadow-lg"
+              className="shadow-lg"
               data-aos="fade-up" 
               data-aos-delay="400"
             >
               Clear Filters
-            </button>
+            </PrimaryButton>
           )}
         </div>
       </div>

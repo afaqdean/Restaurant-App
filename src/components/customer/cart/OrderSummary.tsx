@@ -1,6 +1,7 @@
 import { CouponSection } from "./CouponSection";
 import { PriceBreakdown } from "./PriceBreakdown";
 import { CartActions } from "./CartActions";
+import { CardHeader } from "@/components/ui";
 
 interface OrderSummaryProps {
   cart: {
@@ -36,14 +37,10 @@ export function OrderSummary({
   return (
     <div className="lg:col-span-1" data-aos="fade-up" data-aos-delay="300">
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100 sticky top-8 overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-            <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
-              <span className="text-emerald-600 font-bold">$</span>
-            </div>
-            Order Summary
-          </h2>
-        </div>
+        <CardHeader
+          title="Order Summary"
+          icon={<span className="text-emerald-600 font-bold">$</span>}
+        />
         
         <div className="p-6">
           <CouponSection

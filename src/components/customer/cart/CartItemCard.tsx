@@ -1,20 +1,10 @@
+import { memo } from "react";
 import Image from "next/image";
 import { Plus, Minus, Trash2, Edit3 } from "lucide-react";
-import { CartItemWithDetails } from "@/types/cart";
+import { CartActionButton, QuantityButton } from "@/components/ui/buttons";
+import { CartItemCardProps } from "@/types/customer-components";
 
-interface CartItemCardProps {
-  item: CartItemWithDetails;
-  notes: string;
-  isLoading: boolean;
-  onQuantityChange: (itemId: string, newQuantity: number, e?: React.MouseEvent) => void;
-  onNotesChange: (itemId: string, newNotes: string) => void;
-  onOpenCustomization: (item: CartItemWithDetails) => void;
-  onRemove: (itemId: string) => void;
-  formatPrice: (cents: number) => string;
-  dataAosDelay?: number;
-}
-
-export function CartItemCard({
+export const CartItemCard = memo(function CartItemCard({
   item,
   notes,
   isLoading,
@@ -81,13 +71,14 @@ export function CartItemCard({
 
           {/* Edit Button */}
           <div className="mb-4">
-            <button
+            <CartActionButton
               onClick={() => onOpenCustomization(item)}
-              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center hover:underline"
+              action="edit"
+              variant="text"
+              size="sm"
             >
-              <Edit3 className="w-4 h-4 mr-1" />
               Edit Customizations
-            </button>
+            </CartActionButton>
           </div>
           
           {/* Notes */}
@@ -107,48 +98,41 @@ export function CartItemCard({
           {/* Quantity Controls */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <button
-                type="button"
+              <QuantityButton
+                type="decrement"
                 onClick={(e) => onQuantityChange(item.itemId, item.quantity - 1, e)}
                 disabled={isLoading}
-                className="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-emerald-50 hover:border-emerald-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                isLoading={isLoading}
               >
-                {isLoading ? (
-                  <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-                ) : (
-                  <Minus className="w-4 h-4" />
-                )}
-              </button>
+                -
+              </QuantityButton>
               <span className="w-8 text-center text-lg font-semibold">{item.quantity}</span>
-              <button
-                type="button"
+              <QuantityButton
+                type="increment"
                 onClick={(e) => onQuantityChange(item.itemId, item.quantity + 1, e)}
                 disabled={isLoading}
-                className="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-emerald-50 hover:border-emerald-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                isLoading={isLoading}
               >
-                {isLoading ? (
-                  <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-                ) : (
-                  <Plus className="w-4 h-4" />
-                )}
-              </button>
+                +
+              </QuantityButton>
             </div>
             
-            <button
+            <CartActionButton
               type="button"
               onClick={(e) => {
                 e.preventDefault();
                 onRemove(item.itemId);
               }}
               disabled={isLoading}
-              className="text-red-600 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center font-medium hover:underline transition-colors"
+              action="remove"
+              variant="destructive"
+              size="sm"
             >
-              <Trash2 className="w-4 h-4 mr-1" />
               Remove
-            </button>
+            </CartActionButton>
           </div>
         </div>
       </div>
     </div>
   );
-}
+});

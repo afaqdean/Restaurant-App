@@ -8,6 +8,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { PrimaryButton } from "@/components/ui/buttons";
 
 // Initialize Stripe
 const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY;
@@ -127,13 +128,17 @@ function PaymentForm({ clientSecret, onPaymentSuccess, onPaymentError }: Omit<St
           </div>
         )}
 
-        <button
+        <PrimaryButton
           type="submit"
           disabled={!stripe || loading}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:bg-blue-400 transition-colors"
+          isLoading={loading}
+          loadingText="Processing Payment..."
+          fullWidth
+          variant="solid"
+          className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400"
         >
-          {loading ? "Processing Payment..." : "Complete Payment"}
-        </button>
+          Complete Payment
+        </PrimaryButton>
       </div>
     </form>
   );

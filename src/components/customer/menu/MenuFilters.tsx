@@ -1,13 +1,5 @@
-import { Category } from "@/types/menu";
-
-interface MenuFiltersProps {
-  searchQuery: string;
-  selectedCategory: string;
-  categories: Category[];
-  onSearchChange: (query: string) => void;
-  onCategoryChange: (categoryId: string) => void;
-  className?: string;
-}
+import { FilterButton } from "@/components/ui/buttons";
+import { MenuFiltersProps } from "@/types/customer-components";
 
 export function MenuFilters({
   searchQuery,
@@ -35,28 +27,22 @@ export function MenuFilters({
 
         {/* Category Filter */}
         <div className="flex flex-wrap justify-center gap-4 mb-8" data-aos="fade-up" data-aos-delay="200">
-          <button
+          <FilterButton
             onClick={() => onCategoryChange("all")}
-            className={`px-6 py-3 rounded-xl transition-all duration-200 font-medium ${
-              selectedCategory === "all"
-                ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg"
-                : "bg-white text-gray-700 border border-gray-200 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
-            }`}
+            isActive={selectedCategory === "all"}
+            variant="category"
           >
             All Items
-          </button>
+          </FilterButton>
           {categories.map((category) => (
-            <button
+            <FilterButton
               key={category.id}
               onClick={() => onCategoryChange(category.id)}
-              className={`px-6 py-3 rounded-xl transition-all duration-200 font-medium ${
-                selectedCategory === category.id
-                  ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg"
-                  : "bg-white text-gray-700 border border-gray-200 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
-              }`}
+              isActive={selectedCategory === category.id}
+              variant="category"
             >
               {category.name}
-            </button>
+            </FilterButton>
           ))}
         </div>
       </div>

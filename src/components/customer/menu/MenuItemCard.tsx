@@ -1,21 +1,12 @@
 "use client";
 
-import { MenuItem } from "@/types/menu";
+import { memo } from "react";
 import Image from "next/image";
-import { Star, ShoppingCart } from "lucide-react";
+import { Star} from "lucide-react";
+import { CartActionButton } from "@/components/ui/buttons";
+import { MenuItemCardProps } from "@/types/customer-components";
 
-interface MenuItemCardProps {
-  item: MenuItem;
-  onAddToCart?: (item: MenuItem) => void;
-  onItemClick?: (item: MenuItem) => void;
-  addingToCart?: boolean;
-  showFeatured?: boolean;
-  className?: string;
-  'data-aos'?: string;
-  'data-aos-delay'?: string | number;
-}
-
-export function MenuItemCard({ 
+export const MenuItemCard = memo(function MenuItemCard({ 
   item, 
   onAddToCart, 
   onItemClick,
@@ -104,25 +95,19 @@ export function MenuItemCard({
           <span className="text-xs sm:text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
             {item.category.name}
           </span>
-          <button
+          <CartActionButton
             onClick={handleAddToCart}
             disabled={addingToCart}
-            className="text-emerald-600 hover:text-emerald-700 font-semibold flex items-center gap-1 group-hover:gap-2 transition-all text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+            action="add"
+            variant="icon-text"
+            size="md"
+            isLoading={addingToCart}
+            loadingText="Adding..."
           >
-            {addingToCart ? (
-              <>
-                <div className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-                Adding...
-              </>
-            ) : (
-              <>
-                <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
-                Order Now
-              </>
-            )}
-          </button>
+            Order Now
+          </CartActionButton>
         </div>
       </div>
     </div>
   );
-}
+});

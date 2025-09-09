@@ -18,6 +18,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { ReceiptButton } from "@/components/ui/ReceiptButton";
+import { PageLoadingState, PageErrorState } from "@/components/ui/StandardStates";
 
 interface Order {
   id: string;
@@ -199,34 +200,15 @@ export default function AdminOrderDetailPage() {
   }, [orderId]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading order details...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <PageLoadingState message="Loading order details..." />;
   }
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <h2 className="text-lg font-semibold text-red-800 mb-2">Error</h2>
-            <p className="text-red-600">{error || "Order not found"}</p>
-            <Link
-              href="/admin/orders"
-              className="mt-4 inline-block px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Back to Orders
-            </Link>
-          </div>
-        </div>
-      </div>
+      <PageErrorState 
+        message={error || "Order not found"} 
+        onRetry={() => window.location.reload()} 
+      />
     );
   }
 

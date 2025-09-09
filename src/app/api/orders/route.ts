@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { OrderService } from "@/lib/services/order-service";
+import { OrderStatus } from "@/types/order";
 
 /**
  * @swagger
@@ -56,7 +57,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get("limit") || "20");
     const offset = parseInt(searchParams.get("offset") || "0");
-    const status = searchParams.get("status") || undefined;
+    const statusParam = searchParams.get("status");
+    const status = statusParam as OrderStatus | "CART" | undefined;
 
     const orderService = new OrderService();
 

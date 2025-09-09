@@ -13,6 +13,7 @@ const updateExpenseSchema = z.object({
   vendor: z.string().optional(),
   receipt: z.string().optional(),
   paid: z.boolean().optional(),
+  paidAt: z.date().optional(),
   notes: z.string().optional(),
 });
 
@@ -169,7 +170,7 @@ export async function PUT(
     if (validatedData.paid === true) {
       updateData.paidAt = new Date();
     } else if (validatedData.paid === false) {
-      updateData.paidAt = null;
+      updateData.paidAt = undefined;
     }
 
     const expense = await prisma.expense.update({

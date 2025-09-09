@@ -16,8 +16,8 @@ export class AuditService {
     options: {
       orderId?: string;
       userId?: string;
-      oldValue?: any;
-      newValue?: any;
+      oldValue?: string;
+      newValue?: string;
     } = {}
   ): Promise<void> {
     try {
@@ -45,8 +45,8 @@ export class AuditService {
     await this.logAction("ORDER_STATUS_CHANGED", {
       orderId,
       userId,
-      oldValue: { status: oldStatus },
-      newValue: { status: newStatus },
+      oldValue: oldStatus,
+      newValue: newStatus,
     });
   }
 
@@ -59,8 +59,8 @@ export class AuditService {
     await this.logAction("PAYMENT_STATUS_CHANGED", {
       orderId,
       userId,
-      oldValue: { paymentStatus: oldStatus },
-      newValue: { paymentStatus: newStatus },
+      oldValue: oldStatus,
+      newValue: newStatus,
     });
   }
 
@@ -71,116 +71,119 @@ export class AuditService {
     await this.logAction("COD_PAYMENT_CONFIRMED", {
       orderId,
       userId,
-      newValue: { confirmed: true, timestamp: new Date().toISOString() },
+      newValue: `Confirmed at ${new Date().toISOString()}`,
     });
   }
 
   async logItemCreated(
     itemId: string,
-    itemData: any,
+    itemData: string,
     userId?: string
   ): Promise<void> {
     await this.logAction("ITEM_CREATED", {
       userId,
-      newValue: { itemId, ...itemData },
+      newValue: itemData,
     });
   }
 
   async logItemUpdated(
     itemId: string,
-    oldData: any,
-    newData: any,
+    oldData: string,
+    newData: string,
     userId?: string
   ): Promise<void> {
     await this.logAction("ITEM_UPDATED", {
       userId,
-      oldValue: { itemId, ...oldData },
-      newValue: { itemId, ...newData },
+      oldValue: oldData,
+      newValue: newData,
     });
   }
 
   async logItemDeleted(
     itemId: string,
-    itemData: any,
+    itemData: string,
     userId?: string
   ): Promise<void> {
     await this.logAction("ITEM_DELETED", {
       userId,
-      oldValue: { itemId, ...itemData },
+      oldValue: itemData,
     });
   }
 
   async logCategoryCreated(
     categoryId: string,
-    categoryData: any,
+    categoryData: string,
     userId?: string
   ): Promise<void> {
     await this.logAction("CATEGORY_CREATED", {
       userId,
-      newValue: { categoryId, ...categoryData },
+      newValue: categoryData,
     });
   }
 
   async logCategoryUpdated(
     categoryId: string,
-    oldData: any,
-    newData: any,
+    oldData: string,
+    newData: string,
     userId?: string
   ): Promise<void> {
     await this.logAction("CATEGORY_UPDATED", {
       userId,
-      oldValue: { categoryId, ...oldData },
-      newValue: { categoryId, ...newData },
+      oldValue: oldData,
+      newValue: newData,
     });
   }
 
   async logCategoryDeleted(
     categoryId: string,
-    categoryData: any,
+    categoryData: string,
     userId?: string
   ): Promise<void> {
     await this.logAction("CATEGORY_DELETED", {
       userId,
-      oldValue: { categoryId, ...categoryData },
+      oldValue: categoryData,
     });
   }
 
   async logExpenseCreated(
     expenseId: string,
-    expenseData: any,
+    expenseData: string,
     userId?: string
   ): Promise<void> {
     await this.logAction("EXPENSE_CREATED", {
       userId,
-      newValue: { expenseId, ...expenseData },
+      newValue: expenseData,
     });
   }
 
   async logExpenseUpdated(
     expenseId: string,
-    oldData: any,
-    newData: any,
+    oldData: string,
+    newData: string,
     userId?: string
   ): Promise<void> {
     await this.logAction("EXPENSE_UPDATED", {
       userId,
-      oldValue: { expenseId, ...oldData },
-      newValue: { expenseId, ...newData },
+      oldValue: oldData,
+      newValue: newData,
     });
   }
 
   async logExpenseDeleted(
     expenseId: string,
-    expenseData: any,
+    expenseData: string,
     userId?: string
   ): Promise<void> {
     await this.logAction("EXPENSE_DELETED", {
       userId,
-      oldValue: { expenseId, ...expenseData },
+      oldValue: expenseData,
     });
   }
 
-  async logSettingsUpdated(settingsData: any, userId?: string): Promise<void> {
+  async logSettingsUpdated(
+    settingsData: string,
+    userId?: string
+  ): Promise<void> {
     await this.logAction("SETTINGS_UPDATED", {
       userId,
       newValue: settingsData,
@@ -199,6 +202,14 @@ export class AuditService {
       skip: offset,
     });
 
-    return logs;
+    return logs.map((log) => ({
+      id: log.id,
+      orderId: log.orderId || undefined,
+      action: log.action,
+      oldValue: log.oldValue || undefined,
+      newValue: log.newValue || undefined,
+      userId: log.userId || undefined,
+      createdAt: log.createdAt,
+    }));
   }
 }

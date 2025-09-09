@@ -1,5 +1,6 @@
 import React from "react";
-import { Loader2, AlertCircle, Search, ShoppingCart, RefreshCw } from "lucide-react";
+import { Loader2, AlertCircle, Search, ShoppingCart} from "lucide-react";
+import { PrimaryButton, SecondaryButton } from "@/components/ui/buttons";
 
 // Base loading state component
 interface LoadingStateProps {
@@ -68,12 +69,13 @@ export function ErrorState({
         <h2 className="text-xl font-semibold text-red-800 mb-3">{title}</h2>
         <p className="text-red-600 mb-6">{message}</p>
         {onRetry && (
-          <button
+          <PrimaryButton
             onClick={onRetry}
-            className="px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-medium"
+            variant="solid"
+            className="bg-red-600 hover:bg-red-700"
           >
             {retryText}
-          </button>
+          </PrimaryButton>
         )}
       </div>
     </div>
@@ -119,12 +121,12 @@ export function EmptyState({
         <h2 className="text-2xl font-semibold text-gray-900 mb-4">{title}</h2>
         <p className="text-gray-600 mb-6">{message}</p>
         {action && (
-          <button
+          <PrimaryButton
             onClick={action.onClick}
             className={actionClasses}
           >
             {action.label}
-          </button>
+          </PrimaryButton>
         )}
       </div>
     </div>
@@ -174,19 +176,21 @@ export function CartEmptyState({ onBrowseMenu, onGoHome, className = "" }: CartE
               Browse our menu and discover amazing dishes crafted with the finest ingredients.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
+              <PrimaryButton
                 onClick={onBrowseMenu}
-                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl group"
+                size="lg"
+                icon={<ShoppingCart className="w-5 h-5" />}
+                iconPosition="left"
+                className="shadow-lg hover:shadow-xl"
               >
-                <ShoppingCart className="w-5 h-5 mr-2" />
                 Browse Menu
-              </button>
-              <button
+              </PrimaryButton>
+              <SecondaryButton
                 onClick={onGoHome}
-                className="inline-flex items-center justify-center px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-emerald-300 transition-all duration-300 font-medium"
+                size="lg"
               >
                 Back to Home
-              </button>
+              </SecondaryButton>
             </div>
           </div>
         </div>
