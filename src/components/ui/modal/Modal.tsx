@@ -22,8 +22,8 @@ export function Modal({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className={`bg-white rounded-2xl ${maxWidth} w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100 ${className}`}>
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
+      <div className={`bg-white rounded-2xl ${maxWidth} w-full max-h-[90vh] flex flex-col shadow-2xl border border-gray-100 ${className}`}>
+        <div className="flex items-center justify-between p-6 border-b border-gray-100 flex-shrink-0">
           <h2 className="text-2xl font-bold text-gray-900">
             {title}
           </h2>
@@ -34,7 +34,9 @@ export function Modal({
             <X className="h-6 w-6" />
           </button>
         </div>
-        {children}
+        <div className="flex-1 overflow-y-auto">
+          {children}
+        </div>
       </div>
     </div>
   );

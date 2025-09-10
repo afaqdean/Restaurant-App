@@ -1,7 +1,7 @@
 import { memo } from "react";
-import Image from "next/image";
 import { Plus, Minus, Trash2, Edit3 } from "lucide-react";
 import { CartActionButton, QuantityButton } from "@/components/ui/buttons";
+import { ImageWithFallback } from "@/components/ui";
 import { CartItemCardProps } from "@/types/customer-components";
 
 export const CartItemCard = memo(function CartItemCard({
@@ -23,12 +23,17 @@ export const CartItemCard = memo(function CartItemCard({
     >
       <div className="flex items-start space-x-4">
         <div className="relative">
-          <Image
-            src={item.item.image || "/images/placeholder.jpg"}
+          <ImageWithFallback
+            src={item.item.image || "/images/placeholder.png"}
             alt={item.item.name}
             width={100}
             height={100}
             className="w-24 h-24 object-cover rounded-xl shadow-sm"
+            fallbackElement={
+              <div className="w-24 h-24 bg-gray-200 rounded-xl flex items-center justify-center">
+                <span className="text-xs text-gray-500">IMG</span>
+              </div>
+            }
           />
           <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
             {item.quantity}

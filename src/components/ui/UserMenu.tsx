@@ -36,15 +36,6 @@ export function UserMenu() {
               <User className="h-4 w-4 mr-2" />
               Sign In
             </Link>
-            
-            <Link
-              href="/auth/signup"
-              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              onClick={() => setIsOpen(false)}
-            >
-              <User className="h-4 w-4 mr-2" />
-              Sign Up
-            </Link>
           </div>
         )}
       </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Download, Calendar, TrendingUp, TrendingDown, DollarSign, CreditCard, Banknote } from "lucide-react";
 import { useReports, downloadCSVReport } from "@/hooks/useReports";
 import { PageLoadingState, PageErrorState } from "@/components/ui/StandardStates";
+import { SkeletonAdminReportsPage } from "@/components/ui/skeleton";
 
 export default function AdminReportsPage() {
   const [startDate, setStartDate] = useState<string>("");
@@ -27,7 +28,7 @@ export default function AdminReportsPage() {
   };
 
   if (isLoading) {
-    return <PageLoadingState message="Loading reports..." />;
+    return <SkeletonAdminReportsPage />;
   }
 
   if (error) {

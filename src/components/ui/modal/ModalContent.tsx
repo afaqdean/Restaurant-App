@@ -7,7 +7,7 @@ interface ModalContentProps {
 
 export function ModalContent({ children, className = "" }: ModalContentProps) {
   return (
-    <div className={`p-6 space-y-6 ${className}`}>
+    <div className={`p-6 space-y-6 min-h-0 ${className}`}>
       {children}
     </div>
   );

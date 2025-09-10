@@ -1,9 +1,9 @@
 "use client";
 
 import { memo } from "react";
-import Image from "next/image";
 import { Star} from "lucide-react";
 import { CartActionButton } from "@/components/ui/buttons";
+import { ImageWithFallback } from "@/components/ui";
 import { MenuItemCardProps } from "@/types/customer-components";
 
 export const MenuItemCard = memo(function MenuItemCard({ 
@@ -35,42 +35,32 @@ export const MenuItemCard = memo(function MenuItemCard({
       data-aos={dataAos || "fade-up"} 
       data-aos-delay={dataAosDelay || "100"}
     >
-      {item.image ? (
-        <div 
-          className="relative h-48 sm:h-52 lg:h-56 overflow-hidden cursor-pointer"
-          onClick={handleItemClick}
-        >
-          <Image
-            src={item.image}
-            alt={item.name}
-            fill
-            className="object-cover group-hover:scale-110 transition-transform duration-300"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-          {(item.featured || showFeatured) && (
-            <div className="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1">
-              <Star className="h-3 w-3 sm:h-4 sm:w-4" />
-              Featured
+      <div 
+        className="relative h-48 sm:h-52 lg:h-56 overflow-hidden cursor-pointer"
+        onClick={handleItemClick}
+      >
+        <ImageWithFallback
+          src={item.image || "/images/placeholder.png"}
+          alt={item.name}
+          fill
+          className="object-cover group-hover:scale-110 transition-transform duration-300"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          fallbackElement={
+            <div className="h-full bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center">
+              <div className="text-center text-emerald-600">
+                <div className="text-4xl sm:text-5xl mb-2">🍽️</div>
+                <p className="text-sm font-medium">No Image</p>
+              </div>
             </div>
-          )}
-        </div>
-      ) : (
-        <div 
-          className="relative h-48 sm:h-52 lg:h-56 bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center cursor-pointer"
-          onClick={handleItemClick}
-        >
-          <div className="text-center text-emerald-600">
-            <div className="text-4xl sm:text-5xl mb-2">🍽️</div>
-            <p className="text-sm font-medium">No Image</p>
+          }
+        />
+        {(item.featured || showFeatured) && (
+          <div className="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1">
+            <Star className="h-3 w-3 sm:h-4 sm:w-4" />
+            Featured
           </div>
-          {(item.featured || showFeatured) && (
-            <div className="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1">
-              <Star className="h-3 w-3 sm:h-4 sm:w-4" />
-              Featured
-            </div>
-          )}
-        </div>
-      )}
+        )}
+      </div>
       
       <div className="p-4 sm:p-6 flex-1 flex flex-col">
         <div className="flex justify-between items-start mb-3">

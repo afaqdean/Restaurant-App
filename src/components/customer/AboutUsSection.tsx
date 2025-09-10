@@ -81,9 +81,9 @@ export default function AboutUsSection() {
               </div>
 
               {/* Image */}
-              <div className="md:absolute md:left-[536px] md:top-[-20%] -mb-12 mt-8 md:mt-36 md:mb-0" data-aos="fade-up" data-aos-anchor="[data-aos-id-3]" data-aos-delay="600">
+              <div className="md:absolute md:left-[500px] md:top-[-5%] -mb-12 mt-8 md:mt-36 md:mb-0" data-aos="fade-up" data-aos-anchor="[data-aos-id-3]" data-aos-delay="600">
                 <div className="relative -mx-16 md:mx-0">
-                  <div className="w-[150%] h-[150%] flex items-center justify-center mx-auto">
+                  <div className="w-[110%] h-[110%] flex items-center justify-center mx-auto">
                     <Image
                       src="/images/culinary_experience.svg"
                       alt="Culinary Experience"

@@ -3,6 +3,7 @@
 import { useSettings, useUpdateSettings } from "@/hooks/useSettings";
 import { SettingsForm } from "@/components/admin/SettingsForm";
 import { PageLoadingState, PageErrorState } from "@/components/ui/StandardStates";
+import { SkeletonAdminSettingsPage } from "@/components/ui/skeleton";
 
 export default function AdminSettingsPage() {
   const { data, isLoading, error } = useSettings();
@@ -13,7 +14,7 @@ export default function AdminSettingsPage() {
   };
 
   if (isLoading) {
-    return <PageLoadingState message="Loading settings..." />;
+    return <SkeletonAdminSettingsPage />;
   }
 
   if (error) {

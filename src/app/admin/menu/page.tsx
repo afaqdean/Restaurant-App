@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Plus, Edit, Trash2, Eye, EyeOff } from "lucide-react";
+import { ImageWithFallback } from "@/components/ui";
+import { SkeletonAdminMenuPage } from "@/components/ui/skeleton";
 import { 
   useCategories, 
   useItems, 
@@ -95,6 +97,10 @@ export default function AdminMenuPage() {
       data: { active: !item.active } 
     });
   };
+
+  if (categoriesLoading || itemsLoading) {
+    return <SkeletonAdminMenuPage />;
+  }
 
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -205,15 +211,20 @@ export default function AdminMenuPage() {
                     </div>
                   </div>
                   
-                  {category.image && (
-                    <div className="mb-4">
-                      <img
-                        src={category.image}
-                        alt={category.name}
-                        className="w-full h-32 object-cover rounded-md"
-                      />
-                    </div>
-                  )}
+                  <div className="mb-4">
+                    <ImageWithFallback
+                      src={category.image || "/images/placeholder.png"}
+                      alt={category.name}
+                      width={400}
+                      height={128}
+                      className="w-full h-32 object-cover rounded-md"
+                      fallbackElement={
+                        <div className="w-full h-32 bg-gray-200 rounded-md flex items-center justify-center">
+                          <span className="text-sm text-gray-500">No Image</span>
+                        </div>
+                      }
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -301,15 +312,20 @@ export default function AdminMenuPage() {
                     </div>
                   </div>
                   
-                  {item.image && (
-                    <div className="mb-4">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-32 object-cover rounded-md"
-                      />
-                    </div>
-                  )}
+                  <div className="mb-4">
+                    <ImageWithFallback
+                      src={item.image || "/images/placeholder.png"}
+                      alt={item.name}
+                      width={400}
+                      height={128}
+                      className="w-full h-32 object-cover rounded-md"
+                      fallbackElement={
+                        <div className="w-full h-32 bg-gray-200 rounded-md flex items-center justify-center">
+                          <span className="text-sm text-gray-500">No Image</span>
+                        </div>
+                      }
+                    />
+                  </div>
 
                   {item.featured && (
                     <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-800 border border-orange-200">

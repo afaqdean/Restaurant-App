@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { PrimaryButton, SecondaryButton } from "@/components/ui/buttons";
 import { PageWrapper, PageStateHandler, PageHeader } from "@/components/ui/layout";
-import { StatusBadge } from "@/components/ui";
+import { StatusBadge, ImageWithFallback } from "@/components/ui";
+import { SkeletonOrdersPage } from "@/components/ui/skeleton";
+import { OrderStatusDropdown } from "@/components/ui/OrderStatusDropdown";
 import { useOrdersPage } from "@/hooks/useOrdersPage";
 
 export default function OrdersPage() {
@@ -19,10 +20,14 @@ export default function OrdersPage() {
     formatPrice,
   } = useOrdersPage();
 
+  if (loading) {
+    return <SkeletonOrdersPage />;
+  }
+
   return (
     <PageWrapper>
       <PageStateHandler
-        loading={loading}
+        loading={false}
         error={error}
         loadingMessage="Loading orders..."
         onRetry={refetch}
@@ -68,20 +73,20 @@ export default function OrdersPage() {
                 </SecondaryButton>
               )}
             </div>
-            <select
-              id="status-filter"
+            <OrderStatusDropdown
               value={statusFilter}
-              onChange={(e) => handleStatusFilterChange(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-            >
-              <option value="">All Orders</option>
-              <option value="PENDING">Pending</option>
-              <option value="ACCEPTED">Accepted</option>
-              <option value="IN_KITCHEN">In Kitchen</option>
-              <option value="READY">Ready</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="CANCELLED">Cancelled</option>
-            </select>
+              onChange={(value) => handleStatusFilterChange(value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 backdrop-blur-sm shadow-lg hover:shadow-xl focus:shadow-xl"
+              options={[
+                { value: "", label: "All Orders" },
+                { value: "PENDING", label: "Pending" },
+                { value: "ACCEPTED", label: "Accepted" },
+                { value: "IN_KITCHEN", label: "In Kitchen" },
+                { value: "READY", label: "Ready" },
+                { value: "COMPLETED", label: "Completed" },
+                { value: "CANCELLED", label: "Cancelled" },
+              ]}
+            />
           </div>
         </div>
 
@@ -136,11 +141,16 @@ export default function OrdersPage() {
                     {order.items.slice(0, 3).map((item) => (
                       <div key={item.id} className="flex items-center space-x-2">
                         <div className="relative w-12 h-12">
-                          <Image
-                            src={item.item.image || "/images/placeholder.jpg"}
+                          <ImageWithFallback
+                            src={item.item.image || "/images/placeholder.png"}
                             alt={item.item.name}
                             fill
                             className="object-cover rounded"
+                            fallbackElement={
+                              <div className="w-full h-full bg-gray-200 rounded flex items-center justify-center">
+                                <span className="text-xs text-gray-500">IMG</span>
+                              </div>
+                            }
                           />
                         </div>
                         <div>

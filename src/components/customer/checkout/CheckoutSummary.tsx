@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import { CheckoutSummaryProps } from "@/types/components";
+import { ImageWithFallback } from "@/components/ui";
 
 export function CheckoutSummary({ cart, formatPrice }: CheckoutSummaryProps) {
   return (
@@ -23,12 +23,17 @@ export function CheckoutSummary({ cart, formatPrice }: CheckoutSummaryProps) {
             <div className="space-y-3">
               {cart.items.map((item) => (
                 <div key={item.itemId} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                  <Image
-                    src={item.item.image || "/images/placeholder.jpg"}
+                  <ImageWithFallback
+                    src={item.item.image || "/images/placeholder.png"}
                     alt={item.item.name}
                     width={48}
                     height={48}
                     className="w-12 h-12 object-cover rounded-lg"
+                    fallbackElement={
+                      <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <span className="text-xs text-gray-500">IMG</span>
+                      </div>
+                    }
                   />
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-medium text-gray-900 truncate">{item.item.name}</h4>

@@ -4,6 +4,7 @@ import { ItemCustomizationModal } from "@/components/ui/ItemCustomizationModal";
 import { useCartPage } from "@/hooks/useCartPage";
 import { CartEmptyState } from "@/components/ui/StandardStates";
 import { PageWrapper, PageStateHandler, PageHeader } from "@/components/ui/layout";
+import { SkeletonCartPage } from "@/components/ui/skeleton";
 import {
   CartItemsList,
   OrderSummary,
@@ -36,10 +37,14 @@ export default function CartPage() {
     />
   ) : null;
 
+  if (state.initialLoading) {
+    return <SkeletonCartPage />;
+  }
+
   return (
     <PageWrapper>
       <PageStateHandler
-        loading={state.initialLoading}
+        loading={false}
         error={state.error}
         loadingMessage="Loading your cart..."
         onRetry={() => window.location.reload()}

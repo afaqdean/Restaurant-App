@@ -47,7 +47,7 @@ export default function CustomerReviews() {
                   variant="carousel"
                   size="lg"
                   onClick={prevReview}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 z-10 w-14 h-14 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-6 z-10 w-12 h-12 sm:w-16 sm:h-16 bg-white/90 hover:bg-white text-slate-800 hover:text-slate-900 border-2 border-white/30 hover:border-white shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300"
                   label="Previous review"
                 >
                   ←
@@ -58,14 +58,14 @@ export default function CustomerReviews() {
                   variant="carousel"
                   size="lg"
                   onClick={nextReview}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 z-10 w-14 h-14 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-6 z-10 w-12 h-12 sm:w-16 sm:h-16 bg-white/90 hover:bg-white text-slate-800 hover:text-slate-900 border-2 border-white/30 hover:border-white shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300"
                   label="Next review"
                 >
                   →
                 </NavigationButton>
 
                 {/* Review Card */}
-                <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-10 md:p-16 mx-12 border border-white/10 shadow-2xl">
+                <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-10 md:p-16 mx-8 sm:mx-12 border border-white/10 shadow-2xl">
                   {/* Stars */}
                   <div className="flex justify-center mb-8">
                     <StarRating rating={currentReview.rating} />

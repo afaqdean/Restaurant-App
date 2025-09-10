@@ -3,7 +3,6 @@
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { 
   ArrowLeft, 
   Clock, 
@@ -17,7 +16,9 @@ import {
   XCircle,
   AlertCircle
 } from "lucide-react";
+import { ImageWithFallback } from "@/components/ui";
 import { ReceiptButton } from "@/components/ui/ReceiptButton";
+import { OrderStatusDropdown } from "@/components/ui/OrderStatusDropdown";
 import { PageLoadingState, PageErrorState } from "@/components/ui/StandardStates";
 
 interface Order {
@@ -260,19 +261,12 @@ export default function AdminOrderDetailPage() {
               
               {/* Status Update */}
               <div className="flex items-center space-x-4">
-                <select
+                <OrderStatusDropdown
                   value={order.status}
-                  onChange={(e) => updateOrderStatus(e.target.value)}
+                  onChange={(value) => updateOrderStatus(value)}
                   disabled={updatingStatus}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                >
-                  <option value="PENDING">Pending</option>
-                  <option value="ACCEPTED">Accepted</option>
-                  <option value="IN_KITCHEN">In Kitchen</option>
-                  <option value="READY">Ready</option>
-                  <option value="COMPLETED">Completed</option>
-                  <option value="CANCELLED">Cancelled</option>
-                </select>
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 backdrop-blur-sm shadow-lg hover:shadow-xl focus:shadow-xl transition-all duration-200"
+                />
                 
                 {order.paymentMethod === "COD" && order.paymentStatus === "UNPAID" && (
                   <button
@@ -293,12 +287,17 @@ export default function AdminOrderDetailPage() {
               <div className="space-y-4">
                 {order.items.map((item) => (
                   <div key={item.id} className="flex items-start space-x-4 border-b pb-4 last:border-b-0">
-                    <Image
-                      src={item.item.image || "/images/placeholder.jpg"}
+                    <ImageWithFallback
+                      src={item.item.image || "/images/placeholder.png"}
                       alt={item.item.name}
                       width={64}
                       height={64}
                       className="w-16 h-16 object-cover rounded-lg"
+                      fallbackElement={
+                        <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                          <span className="text-xs text-gray-500">IMG</span>
+                        </div>
+                      }
                     />
                     <div className="flex-1">
                       <h3 className="font-semibold text-gray-900">{item.item.name}</h3>

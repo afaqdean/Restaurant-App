@@ -5,6 +5,7 @@ import { CartEmptyState } from "@/components/ui/StandardStates";
 import { CheckoutForm, CheckoutSummary } from "@/components/customer/checkout";
 import { PageWrapper, PageStateHandler, PageHeader } from "@/components/ui/layout";
 import { AuthRequired } from "@/components/ui/AuthRequired";
+import { SkeletonCheckoutPage } from "@/components/ui/skeleton";
 import { CartSummary } from "@/types/cart";
 
 export default function CheckoutPage() {
@@ -47,10 +48,14 @@ export default function CheckoutPage() {
     );
   }
 
+  if (state.initialLoading) {
+    return <SkeletonCheckoutPage />;
+  }
+
   return (
     <PageWrapper>
       <PageStateHandler
-        loading={state.initialLoading}
+        loading={false}
         error={state.error}
         loadingMessage="Loading checkout..."
         onRetry={() => window.location.reload()}

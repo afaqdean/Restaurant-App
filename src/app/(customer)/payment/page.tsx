@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { PaymentForm, PaymentSummary } from "@/components/customer/payment";
 import { PageWrapper, PageStateHandler, PageHeader, GridLayout } from "@/components/ui/layout";
 import { PageLoadingState } from "@/components/ui/StandardStates";
+import { SkeletonPaymentPage } from "@/components/ui/skeleton";
 import { usePaymentPage } from "@/hooks/usePaymentPage";
 
 function PaymentPageContent() {
@@ -37,10 +38,14 @@ function PaymentPageContent() {
     );
   }
 
+  if (loading) {
+    return <SkeletonPaymentPage />;
+  }
+
   return (
     <PageWrapper>
       <PageStateHandler
-        loading={loading}
+        loading={false}
         error={error || (!order ? "Order not found" : null)}
         loadingMessage="Loading payment..."
         onRetry={refetch}

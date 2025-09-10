@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { OrderDetails, OrderSummary } from "@/components/customer/order";
 import { PageWrapper, PageStateHandler, PageHeader, GridLayout } from "@/components/ui/layout";
 import { PageLoadingState } from "@/components/ui/StandardStates";
+import { SkeletonOrderDetailsPage } from "@/components/ui/skeleton";
 import { CheckCircle, DollarSign } from "lucide-react";
 import { useOrderPage } from "@/hooks/useOrderPage";
 
@@ -17,10 +18,14 @@ function OrderPageContent() {
     formatPrice,
   } = useOrderPage();
 
+  if (loading) {
+    return <SkeletonOrderDetailsPage />;
+  }
+
   return (
     <PageWrapper>
       <PageStateHandler
-        loading={loading}
+        loading={false}
         error={error || (!order ? "Order not found" : null)}
         loadingMessage="Loading order..."
         onRetry={refetch}

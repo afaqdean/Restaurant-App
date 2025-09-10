@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Receipt } from "lucide-react";
+import { ImageWithFallback } from "@/components/ui";
 import { PaymentSummaryProps } from "@/types/components";
 
 export function PaymentSummary({ order, formatPrice }: PaymentSummaryProps) {
@@ -35,18 +35,17 @@ export function PaymentSummary({ order, formatPrice }: PaymentSummaryProps) {
             <div className="space-y-3">
               {order.items.map((item) => (
                 <div key={item.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                    {item.item.image ? (
-                      <Image
-                        src={item.item.image}
-                        alt={item.item.name}
-                        width={48}
-                        height={48}
-                        className="w-12 h-12 object-cover rounded-lg"
-                      />
-                    ) : (
-                      <span className="text-xs text-gray-500">IMG</span>
-                    )}
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                    <ImageWithFallback
+                      src={item.item.image || "/images/placeholder.png"}
+                      alt={item.item.name}
+                      width={48}
+                      height={48}
+                      className="w-12 h-12 object-cover rounded-lg"
+                      fallbackElement={
+                        <span className="text-xs text-gray-500">IMG</span>
+                      }
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-medium text-gray-900 truncate">{item.item.name}</h4>

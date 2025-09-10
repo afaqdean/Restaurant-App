@@ -1,6 +1,5 @@
-import Image from "next/image";
 import { Package } from "lucide-react";
-import { CardHeader, PriceDisplay } from "@/components/ui";
+import { CardHeader, PriceDisplay, ImageWithFallback } from "@/components/ui";
 import { formatPrice } from "@/lib/utils/formatting";
 
 interface OrderItemsListProps {
@@ -35,18 +34,17 @@ export function OrderItemsList({ items, formatPrice }: OrderItemsListProps) {
         <div className="space-y-4">
           {items.map((item) => (
             <div key={item.id} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
-              <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                {item.item.image ? (
-                  <Image
-                    src={item.item.image}
-                    alt={item.item.name}
-                    width={64}
-                    height={64}
-                    className="w-16 h-16 object-cover rounded-lg"
-                  />
-                ) : (
-                  <span className="text-xs text-gray-500">IMG</span>
-                )}
+              <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <ImageWithFallback
+                  src={item.item.image || "/images/placeholder.png"}
+                  alt={item.item.name}
+                  width={64}
+                  height={64}
+                  className="w-16 h-16 object-cover rounded-lg"
+                  fallbackElement={
+                    <span className="text-xs text-gray-500">IMG</span>
+                  }
+                />
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-gray-900 mb-1">{item.item.name}</h3>

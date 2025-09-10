@@ -51,7 +51,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${aspekta.variable} font-aspekta antialiased bg-white text-gray-800 font-[350]`}>
         <AOSInit />
-        <div className="flex flex-col min-h-screen overflow-hidden">
+        <div className="flex flex-col min-h-screen">
           <SessionProvider>
             <QueryProvider>
               <CartProvider>

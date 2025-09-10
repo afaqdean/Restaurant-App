@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Star, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useRouter } from "next/navigation";
 import { PrimaryButton, NavigationButton, CartActionButton } from "@/components/ui/buttons";
+import { ImageWithFallback } from "@/components/ui";
 import { useCarousel } from "@/hooks/useCarousel";
 import { RestaurantFeaturedItemsProps } from "@/types/customer-components";
 import { MenuItem } from "@/types/menu";
@@ -78,32 +78,27 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
                 {featuredItems.map((item) => (
                   <div key={item.id} className="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 px-2 sm:px-4">
                     <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group h-full flex flex-col border border-gray-100">
-                      {item.image ? (
-                        <div className="relative h-48 sm:h-52 lg:h-56 overflow-hidden">
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-300"
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          />
-                          <div className="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1">
-                            <Star className="h-3 w-3 sm:h-4 sm:w-4" />
-                            Featured
-                          </div>
+                      <div className="relative h-48 sm:h-52 lg:h-56 overflow-hidden">
+                        <ImageWithFallback
+                          src={item.image || "/images/placeholder.png"}
+                          alt={item.name}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-300"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          fallbackElement={
+                            <div className="h-full bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center">
+                              <div className="text-center text-emerald-600">
+                                <div className="text-4xl sm:text-5xl mb-2">🍽️</div>
+                                <p className="text-sm font-medium">No Image</p>
+                              </div>
+                            </div>
+                          }
+                        />
+                        <div className="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1">
+                          <Star className="h-3 w-3 sm:h-4 sm:w-4" />
+                          Featured
                         </div>
-                      ) : (
-                        <div className="relative h-48 sm:h-52 lg:h-56 bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center">
-                          <div className="text-center text-emerald-600">
-                            <div className="text-4xl sm:text-5xl mb-2">🍽️</div>
-                            <p className="text-sm font-medium">No Image</p>
-                          </div>
-                          <div className="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1">
-                            <Star className="h-3 w-3 sm:h-4 sm:w-4" />
-                            Featured
-                          </div>
-                        </div>
-                      )}
+                      </div>
                       
                       <div className="p-4 sm:p-6 flex-1 flex flex-col">
                         <div className="flex justify-between items-start mb-3">

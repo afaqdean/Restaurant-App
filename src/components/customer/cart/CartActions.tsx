@@ -12,7 +12,7 @@ export function CartActions({ isAuthenticated, onClearCart }: CartActionsProps) 
             size="lg" 
             fullWidth 
             icon={<ArrowRight className="w-5 h-5" />}
-            className="shadow-lg hover:shadow-xl"
+            className="shadow-lg hover:shadow-xl mb-6"
           >
             Proceed to Checkout
           </PrimaryButton>

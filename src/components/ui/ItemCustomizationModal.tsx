@@ -46,7 +46,7 @@ export function ItemCustomizationModal({ isOpen, onClose, item, onSave, onAddToC
         await onAddToCart(menuItem, quantity, selectedOptions, notes);
       } else if (!isCartItem) {
         // Fallback to default addToCart
-        await addToCart(menuItem.id, quantity);
+        await addToCart(menuItem.id, quantity, notes, selectedOptions);
       }
       onClose();
     } catch (error) {

@@ -3,6 +3,7 @@
 import { useMenuPage } from "@/hooks/useMenuPage";
 import { ItemCustomizationModal } from "@/components/ui/ItemCustomizationModal";
 import { PageWrapper, PageStateHandler } from "@/components/ui/layout";
+import { SkeletonMenuPage } from "@/components/ui/skeleton";
 import {
   MenuHero,
   MenuFilters,
@@ -44,10 +45,14 @@ export default function MenuPage() {
     />
   ) : null;
 
+  if (loading) {
+    return <SkeletonMenuPage />;
+  }
+
   return (
     <PageWrapper>
       <PageStateHandler
-        loading={loading}
+        loading={false}
         error={error?.message || null}
         loadingMessage="Loading menu..."
         onRetry={refetch}

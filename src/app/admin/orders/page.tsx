@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { PageErrorState } from "@/components/ui/StandardStates";
 import { FilterPopupButton } from "@/components/ui/buttons";
+import { SkeletonAdminOrdersPage } from "@/components/ui/skeleton";
+import { OrderStatusDropdown } from "@/components/ui/OrderStatusDropdown";
 import { useOrdersPage } from "@/hooks/useOrdersPage";
 
 export default function AdminOrdersPage() {
@@ -109,7 +111,9 @@ export default function AdminOrdersPage() {
 
 
 
-  // Remove the full page loading state - we'll show loading overlay on table instead
+  if (loading) {
+    return <SkeletonAdminOrdersPage />;
+  }
 
   if (error) {
     return (
@@ -236,20 +240,12 @@ export default function AdminOrdersPage() {
 
                     {/* Order Status Column */}
                     <td className="px-6 py-5">
-                        <select
+                        <OrderStatusDropdown
                           value={order.status}
-                          onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                          onChange={(value) => updateOrderStatus(order.id, value)}
                           disabled={updatingStatus === order.id}
-                        className="w-full text-sm border-2 border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white hover:border-gray-300 transition-colors appearance-none cursor-pointer"
-                        style={{ minWidth: '140px' }}
-                        >
-                          <option value="PENDING">Pending</option>
-                          <option value="ACCEPTED">Accepted</option>
-                          <option value="IN_KITCHEN">In Kitchen</option>
-                          <option value="READY">Ready</option>
-                          <option value="COMPLETED">Completed</option>
-                          <option value="CANCELLED">Cancelled</option>
-                        </select>
+                          style={{ minWidth: '140px' }}
+                        />
                     </td>
 
                     {/* Payment Method Column */}
