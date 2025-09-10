@@ -27,7 +27,7 @@ export class DashboardService {
       today.getDate() + 1
     );
 
-    // Get today's orders
+    // Get today's orders (exclude CART and CANCELLED orders)
     const todaysOrdersData = await prisma.order.findMany({
       where: {
         createdAt: {
@@ -35,7 +35,7 @@ export class DashboardService {
           lt: endOfDay,
         },
         status: {
-          not: "CANCELLED",
+          notIn: ["CART", "CANCELLED"],
         },
       },
       include: {
@@ -62,11 +62,11 @@ export class DashboardService {
       },
     });
 
-    // Get open orders (not completed or cancelled)
+    // Get open orders (not completed, cancelled, or cart)
     const openOrders = await prisma.order.count({
       where: {
         status: {
-          notIn: ["COMPLETED", "CANCELLED"],
+          notIn: ["COMPLETED", "CANCELLED", "CART"],
         },
       },
     });
@@ -155,7 +155,7 @@ export class DashboardService {
     return await prisma.order.findMany({
       where: {
         status: {
-          not: "CANCELLED",
+          notIn: ["CART", "CANCELLED"],
         },
       },
       include: {

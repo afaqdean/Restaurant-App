@@ -31,7 +31,7 @@ function OrderPageContent() {
               Order <span className="text-emerald-600">Confirmation</span>
             </>
           }
-          subtitle={`Order #${order!.orderNumber} - Thank you for your order!`}
+          subtitle={order ? `Order #${order.orderNumber} - Thank you for your order!` : "Loading order details..."}
         />
 
         {/* Payment Status Messages */}
@@ -60,17 +60,19 @@ function OrderPageContent() {
           </div>
         )}
 
-        <GridLayout columns={3} className="pb-12">
-          <OrderDetails
-            order={order!}
-            formatPrice={formatPrice}
-          />
-          
-          <OrderSummary
-            order={order!}
-            formatPrice={formatPrice}
-          />
-        </GridLayout>
+        {order && (
+          <GridLayout columns={3} className="pb-12">
+            <OrderDetails
+              order={order}
+              formatPrice={formatPrice}
+            />
+            
+            <OrderSummary
+              order={order}
+              formatPrice={formatPrice}
+            />
+          </GridLayout>
+        )}
       </PageStateHandler>
     </PageWrapper>
   );

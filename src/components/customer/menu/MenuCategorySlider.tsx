@@ -1,32 +1,38 @@
 import { Category } from "@/types/menu";
 import { MenuItemCard } from "./MenuItemCard";
+import { useCarousel } from "@/hooks/useCarousel";
+import { NavigationButton } from "@/components/ui/buttons";
 
 interface MenuCategorySliderProps {
   category: Category;
-  sliderPosition: number;
-  onGoToSlide: (direction: 'prev' | 'next') => void;
   onItemClick: (item: any) => void;
   onAddToCart: (item: any) => void;
-  addingToCart: boolean;
+  addingToCartItemId: string | null;
   className?: string;
 }
 
 export function MenuCategorySlider({
   category,
-  sliderPosition,
-  onGoToSlide,
   onItemClick,
   onAddToCart,
-  addingToCart,
+  addingToCartItemId,
   className = "",
 }: MenuCategorySliderProps) {
-  const itemsPerView = typeof window !== 'undefined' 
-    ? (window.innerWidth >= 1280 ? 4 : window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1)
-    : 4;
-  
-  const maxSlides = Math.max(0, category.items.length - itemsPerView);
-  const canGoPrev = sliderPosition > 0;
-  const canGoNext = sliderPosition < maxSlides;
+  const maxVisibleItems = typeof window !== 'undefined' 
+    ? (window.innerWidth >= 1280 ? 3 : window.innerWidth >= 1024 ? 2 : window.innerWidth >= 640 ? 1 : 1)
+    : 3;
+
+  const {
+    currentIndex: currentSlide,
+    next: nextSlide,
+    prev: prevSlide,
+    goTo: goToSlide,
+  } = useCarousel({
+    itemCount: category.items.length,
+    autoPlayInterval: 0, // No autoplay
+    maxVisibleItems,
+    isPaused: true, // Always paused
+  });
 
   return (
     <section className={`py-8 ${className}`} data-aos="fade-up">
@@ -45,20 +51,19 @@ export function MenuCategorySlider({
 
         {/* Items Slider */}
         <div className="relative" data-aos="fade-up" data-aos-delay="200">
-          <div className="overflow-hidden">
+          {/* Slider Container */}
+          <div className="relative overflow-hidden rounded-2xl">
             <div 
-              className="flex transition-transform duration-300 ease-in-out"
-              style={{
-                transform: `translateX(-${sliderPosition * 100}%)`
-              }}
+              className="flex transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(-${currentSlide * (100 / maxVisibleItems)}%)` }}
             >
               {category.items.map((item, index) => (
-                <div key={item.id} className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 flex-shrink-0 px-3">
+                <div key={item.id} className="w-full sm:w-3/5 lg:w-2/5 xl:w-3/10 flex-shrink-0 px-2 sm:px-4">
                   <MenuItemCard
                     item={item}
                     onAddToCart={onAddToCart}
                     onItemClick={onItemClick}
-                    addingToCart={addingToCart}
+                    addingToCart={addingToCartItemId === item.id}
                     data-aos="fade-up"
                     data-aos-delay={`${300 + (index * 100)}`}
                   />
@@ -68,23 +73,44 @@ export function MenuCategorySlider({
           </div>
 
           {/* Navigation Arrows */}
-          {category.items.length > 4 && (
+          {category.items.length > maxVisibleItems && (
             <>
-              <button
-                onClick={() => onGoToSlide('prev')}
-                disabled={!canGoPrev}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-emerald-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
+              <NavigationButton
+                direction="prev"
+                variant="carousel"
+                onClick={prevSlide}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10"
               >
-                <span className="text-2xl text-gray-600">‹</span>
-              </button>
-              <button
-                onClick={() => onGoToSlide('next')}
-                disabled={!canGoNext}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-emerald-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
+                ←
+              </NavigationButton>
+              <NavigationButton
+                direction="next"
+                variant="carousel"
+                onClick={nextSlide}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10"
               >
-                <span className="text-2xl text-gray-600">›</span>
-              </button>
+                →
+              </NavigationButton>
             </>
+          )}
+
+          {/* Slide Indicators */}
+          {category.items.length > maxVisibleItems && (
+            <div className="flex justify-center mt-8 space-x-2">
+              {Array.from({ length: category.items.length - maxVisibleItems + 1 }).map((_, index) => (
+                <NavigationButton
+                  key={index}
+                  direction="next"
+                  variant="dots"
+                  size="sm"
+                  onClick={() => goToSlide(index)}
+                  isActive={index === currentSlide}
+                  label={`Go to slide ${index + 1}`}
+                >
+                  •
+                </NavigationButton>
+              ))}
+            </div>
           )}
         </div>
       </div>

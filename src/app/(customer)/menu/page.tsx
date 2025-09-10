@@ -21,11 +21,10 @@ export default function MenuPage() {
     // State
     selectedCategory,
     searchQuery,
-    sliderPositions,
     isModalOpen,
     loading,
     error,
-    addingToCart,
+    addingToCartItemId,
     
     // Actions
     handleAddToCart,
@@ -33,7 +32,6 @@ export default function MenuPage() {
     handleCategoryChange,
     handleItemClick,
     handleCloseModal,
-    goToSlide,
     clearFilters,
     refetch,
   } = useMenuPage();
@@ -58,13 +56,15 @@ export default function MenuPage() {
       >
       <MenuHero />
       
-      <MenuFilters
-        searchQuery={searchQuery}
-        selectedCategory={selectedCategory}
-        categories={menuData!.categories}
-        onSearchChange={handleSearchChange}
-        onCategoryChange={handleCategoryChange}
-      />
+      {menuData && (
+        <MenuFilters
+          searchQuery={searchQuery}
+          selectedCategory={selectedCategory}
+          categories={menuData.categories}
+          onSearchChange={handleSearchChange}
+          onCategoryChange={handleCategoryChange}
+        />
+      )}
 
       {/* Menu Categories Sections */}
       {filteredCategories.length > 0 ? (
@@ -73,11 +73,9 @@ export default function MenuPage() {
             <MenuCategorySlider
               key={category.id}
               category={category}
-              sliderPosition={sliderPositions[category.id] || 0}
-              onGoToSlide={(direction) => goToSlide(category.id, direction)}
               onItemClick={handleItemClick}
               onAddToCart={handleAddToCart}
-              addingToCart={addingToCart}
+              addingToCartItemId={addingToCartItemId}
             />
           ))}
         </div>

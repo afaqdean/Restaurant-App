@@ -53,14 +53,14 @@ export default function AdminDashboardPage() {
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="text-gray-600 mt-2">Welcome back! Here's your restaurant overview.</p>
+    <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className="mb-8" data-aos="fade-up">
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">Admin Dashboard</h1>
+        <p className="text-lg text-gray-600">Welcome back! Here's your restaurant overview.</p>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" data-aos="fade-up" data-aos-delay="100">
         <KPICard
           title="Today's Orders"
           value={kpis?.todaysOrders || 0}
@@ -88,7 +88,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Charts and Recent Orders */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8" data-aos="fade-up" data-aos-delay="200">
         <PaymentSplitCard
           stripeOrders={kpis?.stripeOrders || 0}
           codOrders={kpis?.codOrders || 0}

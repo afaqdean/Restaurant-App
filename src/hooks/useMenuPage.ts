@@ -6,17 +6,17 @@ import { MenuItem } from "@/types/menu";
 export function useMenuPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sliderPositions, setSliderPositions] = useState<
-    Record<string, number>
-  >({});
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [addingToCartItemId, setAddingToCartItemId] = useState<string | null>(
+    null
+  );
 
   // Use React Query to fetch menu data
   const { data: menuData, isLoading: loading, error, refetch } = useMenu();
 
   // Use cart context
-  const { addToCart, state: cartState } = useCart();
+  const { addToCart } = useCart();
 
   // Filter and search logic
   const filteredCategories = useMemo(() => {
@@ -56,10 +56,13 @@ export function useMenuPage() {
 
   const handleAddToCart = async (item: MenuItem) => {
     try {
+      setAddingToCartItemId(item.id);
       await addToCart(item.id, 1);
     } catch (error) {
       console.error("Failed to add to cart:", error);
       throw error;
+    } finally {
+      setAddingToCartItemId(null);
     }
   };
 
@@ -81,35 +84,6 @@ export function useMenuPage() {
     setSelectedItem(null);
   };
 
-  const goToSlide = (categoryId: string, direction: "prev" | "next") => {
-    const currentPosition = sliderPositions[categoryId] || 0;
-    const itemsPerView =
-      window.innerWidth >= 1280
-        ? 4
-        : window.innerWidth >= 1024
-        ? 3
-        : window.innerWidth >= 640
-        ? 2
-        : 1;
-    const maxSlides = Math.max(
-      0,
-      (filteredCategories.find((cat) => cat.id === categoryId)?.items.length ||
-        0) - itemsPerView
-    );
-
-    let newPosition = currentPosition;
-    if (direction === "next") {
-      newPosition = Math.min(currentPosition + 1, maxSlides);
-    } else {
-      newPosition = Math.max(currentPosition - 1, 0);
-    }
-
-    setSliderPositions((prev) => ({
-      ...prev,
-      [categoryId]: newPosition,
-    }));
-  };
-
   const clearFilters = () => {
     setSearchQuery("");
     setSelectedCategory("all");
@@ -124,11 +98,10 @@ export function useMenuPage() {
     // State
     selectedCategory,
     searchQuery,
-    sliderPositions,
     isModalOpen,
     loading,
     error,
-    addingToCart: cartState.loading,
+    addingToCartItemId,
 
     // Actions
     handleAddToCart,
@@ -136,7 +109,6 @@ export function useMenuPage() {
     handleCategoryChange,
     handleItemClick,
     handleCloseModal,
-    goToSlide,
     clearFilters,
     refetch,
   };

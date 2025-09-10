@@ -13,6 +13,7 @@ function PaymentPageContent() {
     error,
     paymentStatus,
     paymentError,
+    orderId,
     clientSecret,
     handlePaymentSuccess,
     handlePaymentError,
@@ -21,38 +22,57 @@ function PaymentPageContent() {
     formatPrice,
   } = usePaymentPage();
 
+  // Early return if critical data is missing
+  if (!orderId || !clientSecret) {
+    return (
+      <PageWrapper>
+        <PageStateHandler
+          loading={false}
+          error="Invalid payment session - missing order ID or payment details"
+          onRetry={() => window.location.reload()}
+        >
+          <div />
+        </PageStateHandler>
+      </PageWrapper>
+    );
+  }
+
   return (
     <PageWrapper>
       <PageStateHandler
         loading={loading}
-        error={error || (!order || !clientSecret ? "Invalid payment session" : null)}
+        error={error || (!order ? "Order not found" : null)}
         loadingMessage="Loading payment..."
         onRetry={refetch}
       >
-        <PageHeader
-          title={
-            <>
-              Complete Your <span className="text-emerald-600">Payment</span>
-            </>
-          }
-          subtitle={`Order #${order!.orderNumber} - Secure payment processing`}
-        />
-        
-        <GridLayout columns={3} className="pb-12">
-          <PaymentForm
-            clientSecret={clientSecret!}
-            paymentStatus={paymentStatus}
-            paymentError={paymentError}
-            onPaymentSuccess={handlePaymentSuccess}
-            onPaymentError={handlePaymentError}
-            onRetryPayment={handleRetryPayment}
-          />
-          
-          <PaymentSummary
-            order={order!}
-            formatPrice={formatPrice}
-          />
-        </GridLayout>
+        {order && (
+          <>
+            <PageHeader
+              title={
+                <>
+                  Complete Your <span className="text-emerald-600">Payment</span>
+                </>
+              }
+              subtitle={`Order #${order.orderNumber} - Secure payment processing`}
+            />
+            
+            <GridLayout columns={3} className="pb-12">
+              <PaymentForm
+                clientSecret={clientSecret}
+                paymentStatus={paymentStatus}
+                paymentError={paymentError}
+                onPaymentSuccess={handlePaymentSuccess}
+                onPaymentError={handlePaymentError}
+                onRetryPayment={handleRetryPayment}
+              />
+              
+              <PaymentSummary
+                order={order}
+                formatPrice={formatPrice}
+              />
+            </GridLayout>
+          </>
+        )}
       </PageStateHandler>
     </PageWrapper>
   );

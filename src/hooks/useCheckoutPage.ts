@@ -10,6 +10,7 @@ export function useCheckoutPage() {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState<CheckoutFormData>({
     customerName: "",
@@ -52,13 +53,29 @@ export function useCheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Prevent multiple submissions
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    setError("");
+
+    // Check if cart is still loading
+    if (state.initialLoading || state.loading) {
+      setError("Please wait while we load your cart...");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Check if cart is empty
     if (!state.cart || state.cart.items.length === 0) {
-      setError("Your cart is empty");
+      setError(
+        "Your cart is empty. Please add items to your cart before placing an order."
+      );
+      setIsSubmitting(false);
       return;
     }
 
     setLoading(true);
-    setError("");
 
     try {
       const response = await fetch("/api/checkout", {
@@ -91,6 +108,7 @@ export function useCheckoutPage() {
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -101,6 +119,7 @@ export function useCheckoutPage() {
     loading,
     error,
     session,
+    isSubmitting,
 
     // Actions
     handleInputChange,

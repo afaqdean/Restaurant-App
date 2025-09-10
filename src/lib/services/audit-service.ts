@@ -3,10 +3,12 @@ import { prisma } from "@/lib/prisma";
 export interface AuditLogEntry {
   id: string;
   orderId?: string;
+  orderNumber?: string;
   action: string;
   oldValue?: string;
   newValue?: string;
   userId?: string;
+  userEmail?: string;
   createdAt: Date;
 }
 
@@ -16,8 +18,8 @@ export class AuditService {
     options: {
       orderId?: string;
       userId?: string;
-      oldValue?: string;
-      newValue?: string;
+      oldValue?: string | object;
+      newValue?: string | object;
     } = {}
   ): Promise<void> {
     try {
@@ -26,8 +28,16 @@ export class AuditService {
           action,
           orderId: options.orderId,
           userId: options.userId,
-          oldValue: options.oldValue ? JSON.stringify(options.oldValue) : null,
-          newValue: options.newValue ? JSON.stringify(options.newValue) : null,
+          oldValue: options.oldValue
+            ? typeof options.oldValue === "string"
+              ? options.oldValue
+              : JSON.stringify(options.oldValue)
+            : null,
+          newValue: options.newValue
+            ? typeof options.newValue === "string"
+              ? options.newValue
+              : JSON.stringify(options.newValue)
+            : null,
         },
       });
     } catch (error) {
@@ -200,15 +210,41 @@ export class AuditService {
       orderBy: { createdAt: "desc" },
       take: limit,
       skip: offset,
+      include: {
+        order: {
+          select: {
+            orderNumber: true,
+          },
+        },
+      },
     });
+
+    // Get user emails for logs that have userId
+    const userIds = logs
+      .map((log) => log.userId)
+      .filter((id): id is string => id !== null);
+
+    const users =
+      userIds.length > 0
+        ? await prisma.user.findMany({
+            where: { id: { in: userIds } },
+            select: { id: true, email: true },
+          })
+        : [];
+
+    const userEmailMap = new Map(users.map((user) => [user.id, user.email]));
 
     return logs.map((log) => ({
       id: log.id,
       orderId: log.orderId || undefined,
+      orderNumber: log.order?.orderNumber || undefined,
       action: log.action,
       oldValue: log.oldValue || undefined,
       newValue: log.newValue || undefined,
       userId: log.userId || undefined,
+      userEmail: log.userId
+        ? userEmailMap.get(log.userId) || undefined
+        : undefined,
       createdAt: log.createdAt,
     }));
   }

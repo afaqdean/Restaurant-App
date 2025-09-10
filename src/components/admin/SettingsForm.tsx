@@ -79,7 +79,7 @@ export function SettingsForm({
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border">
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-100" data-aos="fade-up" data-aos-delay="100">
       <div className="border-b border-gray-200">
         <nav className="-mb-px flex space-x-8 px-6">
           {tabs.map((tab) => {
@@ -88,10 +88,10 @@ export function SettingsForm({
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
                   activeTab === tab.id
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    ? "border-emerald-500 text-emerald-600"
+                    : "border-transparent text-gray-500 hover:text-emerald-600 hover:border-emerald-300"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -116,7 +116,7 @@ export function SettingsForm({
                 <input
                   {...register("businessName")}
                   type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   placeholder="Your Restaurant Name"
                 />
                 {errors.businessName && (
@@ -131,7 +131,7 @@ export function SettingsForm({
                 <input
                   {...register("businessPhone")}
                   type="tel"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   placeholder="(555) 123-4567"
                 />
               </div>
@@ -143,7 +143,7 @@ export function SettingsForm({
                 <input
                   {...register("businessEmail")}
                   type="email"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   placeholder="info@restaurant.com"
                 />
                 {errors.businessEmail && (
@@ -158,7 +158,7 @@ export function SettingsForm({
                 <input
                   {...register("businessWebsite")}
                   type="url"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   placeholder="https://restaurant.com"
                 />
                 {errors.businessWebsite && (
@@ -197,7 +197,7 @@ export function SettingsForm({
                   step="0.1"
                   min="0"
                   max="100"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   placeholder="8.5"
                 />
                 {errors.taxRate && (
@@ -215,7 +215,7 @@ export function SettingsForm({
                   step="0.1"
                   min="0"
                   max="100"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   placeholder="3.0"
                 />
                 {errors.serviceFee && (
@@ -229,7 +229,7 @@ export function SettingsForm({
                 </label>
                 <select
                   {...register("currency")}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                 >
                   <option value="USD">USD - US Dollar</option>
                   <option value="EUR">EUR - Euro</option>
@@ -260,7 +260,7 @@ export function SettingsForm({
                 <input
                   {...register("stripePublishableKey")}
                   type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   placeholder="pk_test_..."
                 />
               </div>
@@ -272,7 +272,7 @@ export function SettingsForm({
                 <input
                   {...register("stripeSecretKey")}
                   type="password"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   placeholder="sk_test_..."
                 />
               </div>
@@ -284,7 +284,7 @@ export function SettingsForm({
                 <input
                   {...register("stripeWebhookSecret")}
                   type="password"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   placeholder="whsec_..."
                 />
               </div>
@@ -305,7 +305,7 @@ export function SettingsForm({
                 <input
                   {...register("orderPrefix")}
                   type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   placeholder="ORD"
                 />
                 <p className="text-sm text-gray-500 mt-1">
@@ -318,7 +318,7 @@ export function SettingsForm({
                   <input
                     {...register("autoAcceptOrders")}
                     type="checkbox"
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                   />
                   <label className="ml-2 block text-sm text-gray-700">
                     Auto-accept orders
@@ -329,7 +329,7 @@ export function SettingsForm({
                   <input
                     {...register("requireCustomerInfo")}
                     type="checkbox"
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                   />
                   <label className="ml-2 block text-sm text-gray-700">
                     Require customer information for orders
@@ -344,7 +344,7 @@ export function SettingsForm({
           <button
             type="submit"
             disabled={isLoading}
-            className="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-emerald-600 to-teal-600 border border-transparent rounded-xl hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200"
           >
             <Save className="w-4 h-4 mr-2" />
             {isLoading ? "Saving..." : "Save Settings"}

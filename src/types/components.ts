@@ -22,6 +22,7 @@ export interface CheckoutFormProps {
   onSubmit: (e: React.FormEvent) => void;
   loading: boolean;
   error: string;
+  cartLoading?: boolean;
 }
 
 // Checkout summary props

@@ -14,6 +14,7 @@ export default function CheckoutPage() {
     loading,
     error,
     session,
+    isSubmitting,
     handleInputChange,
     handleSubmit,
     formatPrice,
@@ -70,8 +71,9 @@ export default function CheckoutPage() {
             formData={formData}
             onInputChange={handleInputChange}
             onSubmit={handleSubmit}
-            loading={loading}
+            loading={loading || isSubmitting}
             error={error}
+            cartLoading={state.initialLoading || state.loading}
           />
           
           <CheckoutSummary

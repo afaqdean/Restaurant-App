@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { OrderCalculation, OrderCreationResult } from "@/types/cart";
-import { OrderStatus } from "@/types/order";
+import { OrderStatus, PaymentMethod, PaymentStatus } from "@/types/order";
 import { SessionCart } from "@/types/cart";
 import { CartService } from "./cart-service";
 import { CheckoutRequest } from "@/lib/validations/cart";
@@ -561,29 +561,60 @@ export class OrderService {
   }
 
   /**
-   * Get all orders (admin)
+   * Get all orders (admin) - excludes CART orders by default
    */
-  async getAllOrders(limit = 50, offset = 0, status?: OrderStatus | "CART") {
-    const where = status ? { status } : {};
+  async getAllOrders(
+    limit = 50,
+    offset = 0,
+    status?: OrderStatus | "CART",
+    paymentMethod?: string,
+    paymentStatus?: string
+  ) {
+    const where: {
+      status?: OrderStatus | { not: OrderStatus };
+      paymentMethod?: PaymentMethod;
+      paymentStatus?: PaymentStatus;
+    } = { status: { not: "CART" as OrderStatus } };
 
-    return await prisma.order.findMany({
-      where,
-      include: {
-        customer: {
-          select: { id: true, name: true, email: true },
-        },
-        items: {
-          include: {
-            item: {
-              select: { id: true, name: true, price: true },
+    if (status) {
+      where.status = status;
+    }
+
+    if (paymentMethod) {
+      where.paymentMethod = paymentMethod as PaymentMethod;
+    }
+
+    if (paymentStatus) {
+      where.paymentStatus = paymentStatus as PaymentStatus;
+    }
+
+    const [orders, totalCount] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        include: {
+          customer: {
+            select: { id: true, name: true, email: true },
+          },
+          items: {
+            include: {
+              item: {
+                select: { id: true, name: true, price: true },
+              },
             },
           },
+          payments: true,
         },
-        payments: true,
-      },
-      orderBy: { createdAt: "desc" },
-      take: limit,
-      skip: offset,
-    });
+        orderBy: { createdAt: "desc" },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.order.count({ where }),
+    ]);
+
+    return {
+      orders,
+      totalCount,
+      hasMore: offset + limit < totalCount,
+    };
   }
 }

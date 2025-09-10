@@ -103,6 +103,7 @@ export const MenuItemCard = memo(function MenuItemCard({
             size="md"
             isLoading={addingToCart}
             loadingText="Adding..."
+            className="whitespace-nowrap"
           >
             Order Now
           </CartActionButton>

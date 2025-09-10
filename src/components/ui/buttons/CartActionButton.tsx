@@ -29,7 +29,7 @@ export function CartActionButton({
 
   const variantClasses = {
     text: "text-emerald-600 hover:text-emerald-700 hover:underline",
-    "icon-text": "text-emerald-600 hover:text-emerald-700 gap-1 group-hover:gap-2 transition-all",
+    "icon-text": "text-emerald-600 hover:text-emerald-700 gap-2 group-hover:gap-3 transition-all",
     destructive: "text-red-600 hover:text-red-700 hover:underline"
   };
 

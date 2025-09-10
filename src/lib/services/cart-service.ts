@@ -496,15 +496,15 @@ export class CartService {
    * Clean up old abandoned cart orders
    */
   async cleanupAbandonedCarts() {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
 
-    // Delete cart orders older than 7 days
+    // Delete cart orders older than 1 day
     const deletedCarts = await prisma.order.deleteMany({
       where: {
         status: "CART",
         createdAt: {
-          lt: sevenDaysAgo,
+          lt: oneDayAgo,
         },
       },
     });

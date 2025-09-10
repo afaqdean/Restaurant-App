@@ -13,6 +13,7 @@ export function CheckoutForm({
   onSubmit,
   loading,
   error,
+  cartLoading = false,
 }: CheckoutFormProps) {
   return (
     <div className="lg:col-span-2" data-aos="fade-up" data-aos-delay="200">
@@ -52,9 +53,9 @@ export function CheckoutForm({
             {/* Submit Button */}
             <AuthButton
               type="submit"
-              disabled={loading}
+              disabled={loading || cartLoading}
               isLoading={loading}
-              loadingText="Processing..."
+              loadingText={cartLoading ? "Loading cart..." : "Processing..."}
               className="py-4 px-6 text-lg"
             >
               Place Order

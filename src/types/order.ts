@@ -49,6 +49,7 @@ export interface Order {
 
 // Order status types
 export type OrderStatus =
+  | "CART"
   | "PENDING"
   | "ACCEPTED"
   | "IN_KITCHEN"

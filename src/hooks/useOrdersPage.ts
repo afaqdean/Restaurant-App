@@ -1,10 +1,25 @@
-import { useState, useMemo } from "react";
+import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Order } from "@/types/customer-pages";
 
-// API function to fetch all orders (no filtering on server)
-async function fetchOrders(): Promise<{ orders: Order[] }> {
-  const response = await fetch("/api/orders");
+// API function to fetch orders with server-side pagination and filtering
+async function fetchOrders(
+  page: number = 1,
+  limit: number = 10,
+  status?: string,
+  paymentMethod?: string,
+  paymentStatus?: string
+): Promise<{ orders: Order[]; totalCount: number; hasMore: boolean }> {
+  const params = new URLSearchParams({
+    limit: limit.toString(),
+    offset: ((page - 1) * limit).toString(),
+  });
+
+  if (status) params.append("status", status);
+  if (paymentMethod) params.append("paymentMethod", paymentMethod);
+  if (paymentStatus) params.append("paymentStatus", paymentStatus);
+
+  const response = await fetch(`/api/orders?${params.toString()}`);
 
   if (!response.ok) {
     const error = await response.json();
@@ -16,37 +31,40 @@ async function fetchOrders(): Promise<{ orders: Order[] }> {
 
 export function useOrdersPage() {
   const [statusFilter, setStatusFilter] = useState("");
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState("");
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
-  // Use React Query to fetch all orders once
+  // Use React Query to fetch orders with server-side pagination
   const {
     data,
     isLoading: loading,
     error,
     refetch,
   } = useQuery({
-    queryKey: ["orders"],
-    queryFn: fetchOrders,
+    queryKey: [
+      "orders",
+      currentPage,
+      statusFilter,
+      paymentMethodFilter,
+      paymentStatusFilter,
+    ],
+    queryFn: () =>
+      fetchOrders(
+        currentPage,
+        itemsPerPage,
+        statusFilter || undefined,
+        paymentMethodFilter || undefined,
+        paymentStatusFilter || undefined
+      ),
     staleTime: 30000, // Consider data fresh for 30 seconds
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
 
-  // Client-side filtering logic (like menu page)
-  const orders = useMemo(() => {
-    if (!data?.orders) return [];
-
-    let filtered = data.orders.filter(
-      (order: Order) => order.status !== "CART"
-    );
-
-    // Filter by status if not empty
-    if (statusFilter) {
-      filtered = filtered.filter(
-        (order: Order) => order.status === statusFilter
-      );
-    }
-
-    return filtered;
-  }, [data?.orders, statusFilter]);
+  const orders = data?.orders || [];
+  const totalCount = data?.totalCount || 0;
+  const hasMore = data?.hasMore || false;
 
   const formatPrice = (cents: number) => {
     return `$${(cents / 100).toFixed(2)}`;
@@ -84,27 +102,77 @@ export function useOrdersPage() {
     }
   };
 
-  const handleStatusFilterChange = (newStatus: string) => {
+  const handleStatusFilterChange = useCallback((newStatus: string) => {
     setStatusFilter(newStatus);
-  };
+    setCurrentPage(1); // Reset to first page when filter changes
+  }, []);
 
-  const clearFilters = () => {
+  const handlePaymentMethodFilterChange = useCallback((newMethod: string) => {
+    setPaymentMethodFilter(newMethod);
+    setCurrentPage(1); // Reset to first page when filter changes
+  }, []);
+
+  const handlePaymentStatusFilterChange = useCallback((newStatus: string) => {
+    setPaymentStatusFilter(newStatus);
+    setCurrentPage(1); // Reset to first page when filter changes
+  }, []);
+
+  const clearFilters = useCallback(() => {
     setStatusFilter("");
-  };
+    setPaymentMethodFilter("");
+    setPaymentStatusFilter("");
+    setCurrentPage(1); // Reset to first page when clearing filters
+  }, []);
+
+  // Pagination functions
+  const goToPage = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+
+  const goToNextPage = useCallback(() => {
+    setCurrentPage((prev) =>
+      Math.min(prev + 1, Math.ceil(totalCount / itemsPerPage))
+    );
+  }, [totalCount, itemsPerPage]);
+
+  const goToPreviousPage = useCallback(() => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  }, []);
+
+  // Calculate pagination info
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, totalCount);
 
   return {
     // Data
     orders,
+    totalCount,
+    totalPages,
+    currentPage,
+    itemsPerPage,
+    startIndex,
+    endIndex,
+    hasMore,
 
     // State
     statusFilter,
+    paymentMethodFilter,
+    paymentStatusFilter,
     loading,
     error: error?.message || null,
 
     // Actions
     handleStatusFilterChange,
+    handlePaymentMethodFilterChange,
+    handlePaymentStatusFilterChange,
     clearFilters,
     refetch,
+
+    // Pagination
+    goToPage,
+    goToNextPage,
+    goToPreviousPage,
 
     // Utils
     formatPrice,

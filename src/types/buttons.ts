@@ -54,6 +54,19 @@ export interface FilterButtonProps extends BaseButtonProps {
   size?: "sm" | "md";
 }
 
+// Filter Popup Button Types
+export interface FilterPopupButtonProps extends BaseButtonProps {
+  statusFilter: string;
+  paymentMethodFilter: string;
+  paymentStatusFilter: string;
+  onStatusFilterChange: (status: string) => void;
+  onPaymentMethodFilterChange: (method: string) => void;
+  onPaymentStatusFilterChange: (status: string) => void;
+  onClearFilters: () => void;
+  variant?: "primary" | "secondary";
+  size?: "sm" | "md" | "lg";
+}
+
 // Quantity Button Types
 export interface QuantityButtonProps extends Omit<BaseButtonProps, "type"> {
   type: "increment" | "decrement";

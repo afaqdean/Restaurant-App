@@ -7,6 +7,11 @@ export interface Order {
   paymentMethod: string;
   total: number;
   createdAt: string;
+  customer?: {
+    id: string;
+    name: string;
+    email: string;
+  };
   items: Array<{
     id: string;
     quantity: number;
@@ -15,6 +20,12 @@ export interface Order {
       name: string;
       image?: string;
     };
+  }>;
+  payments?: Array<{
+    id: string;
+    provider: string;
+    amount: number;
+    status: string;
   }>;
 }
 
