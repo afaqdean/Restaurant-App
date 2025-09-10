@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Edit, Trash2, Check, X, Filter } from "lucide-react";
+import { Plus, Edit, Trash2, Check, X, Filter, Download, Calendar } from "lucide-react";
 import { 
   useExpenses, 
   useCreateExpense, 
   useUpdateExpense, 
   useDeleteExpense,
+  downloadCSVExpenses,
   Expense
 } from "@/hooks/useExpenses";
 import { ExpenseForm } from "@/components/admin/ExpenseForm";
@@ -15,7 +16,25 @@ import { LoadingState } from "@/components/ui/StandardStates";
 export default function AdminExpensesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
-  const [filters, setFilters] = useState<{ category?: string; paid?: boolean }>({});
+  
+  // Set current month as default date range
+  const getCurrentMonthRange = () => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    
+    return {
+      startDate: startOfMonth.toISOString().split('T')[0],
+      endDate: endOfMonth.toISOString().split('T')[0]
+    };
+  };
+  
+  const [filters, setFilters] = useState<{ 
+    category?: string; 
+    paid?: boolean; 
+    startDate?: string; 
+    endDate?: string; 
+  }>(getCurrentMonthRange());
 
   const { data: expensesData, isLoading } = useExpenses(filters);
   const createExpense = useCreateExpense();
@@ -87,7 +106,23 @@ export default function AdminExpensesPage() {
   };
 
   const clearFilters = () => {
-    setFilters({});
+    setFilters(getCurrentMonthRange());
+  };
+
+  const setDateRange = (days: number) => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(start.getDate() - days);
+    
+    setFilters({ 
+      ...filters, 
+      startDate: start.toISOString().split('T')[0],
+      endDate: end.toISOString().split('T')[0]
+    });
+  };
+
+  const handleDownloadCSV = () => {
+    downloadCSVExpenses(filters);
   };
 
   const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
@@ -148,17 +183,20 @@ export default function AdminExpensesPage() {
 
       {/* Filters and Actions */}
       <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <div className="flex items-center space-x-2">
-              <Filter className="w-4 h-4 text-gray-400" />
-              <span className="text-sm font-medium text-gray-700">Filters:</span>
-            </div>
-            
+        {/* Filter Controls */}
+        <div className="space-y-4">
+          {/* Filter Header */}
+          <div className="flex items-center space-x-2">
+            <Filter className="w-4 h-4 text-gray-400" />
+            <span className="text-sm font-medium text-gray-700">Filters:</span>
+          </div>
+
+          {/* Filter Row 1: Category and Status */}
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
             <select
               value={filters.category || ""}
               onChange={(e) => setFilters({ ...filters, category: e.target.value || undefined })}
-              className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+              className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors min-w-[180px]"
             >
               <option value="">All Categories</option>
               <option value="FOOD">Food & Ingredients</option>
@@ -178,33 +216,94 @@ export default function AdminExpensesPage() {
                   paid: value === "" ? undefined : value === "true" 
                 });
               }}
-              className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+              className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors min-w-[140px]"
             >
               <option value="">All Status</option>
               <option value="true">Paid</option>
               <option value="false">Unpaid</option>
             </select>
-
-            {(filters.category || filters.paid !== undefined) && (
-              <button
-                onClick={clearFilters}
-                className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800"
-              >
-                Clear Filters
-              </button>
-            )}
           </div>
 
-          <button
-            onClick={() => {
-              setEditingExpense(null);
-              setShowForm(true);
-            }}
-            className="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-emerald-600 to-teal-600 border border-transparent rounded-xl hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-lg hover:shadow-xl transition-all duration-200"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Expense
-          </button>
+          {/* Filter Row 2: Date Range */}
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+            <div className="flex items-center space-x-2">
+              <Calendar className="w-4 h-4 text-gray-400" />
+              <span className="text-sm font-medium text-gray-700">Date Range:</span>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <input
+                type="date"
+                value={filters.startDate || ""}
+                onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+                className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+              />
+              <span className="text-gray-500">to</span>
+              <input
+                type="date"
+                value={filters.endDate || ""}
+                onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+                className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+              />
+            </div>
+
+            {/* Quick Date Buttons */}
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setDateRange(7)}
+                className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Last 7 days
+              </button>
+              <button
+                onClick={() => setDateRange(30)}
+                className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Last 30 days
+              </button>
+              <button
+                onClick={() => setFilters({ ...filters, ...getCurrentMonthRange() })}
+                className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                This month
+              </button>
+            </div>
+          </div>
+
+          {/* Action Buttons Row */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 pt-2 border-t border-gray-200">
+            <div className="flex items-center space-x-3">
+              {(filters.category || filters.paid !== undefined || filters.startDate || filters.endDate) && (
+                <button
+                  onClick={clearFilters}
+                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  Clear Filters
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={handleDownloadCSV}
+                className="inline-flex items-center px-4 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm hover:shadow-md transition-all duration-200"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export CSV
+              </button>
+              
+              <button
+                onClick={() => {
+                  setEditingExpense(null);
+                  setShowForm(true);
+                }}
+                className="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-emerald-600 to-teal-600 border border-transparent rounded-xl hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Expense
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

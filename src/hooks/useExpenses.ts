@@ -34,7 +34,12 @@ export interface UpdateExpenseData {
   notes?: string;
 }
 
-export function useExpenses(filters?: { category?: string; paid?: boolean }) {
+export function useExpenses(filters?: {
+  category?: string;
+  paid?: boolean;
+  startDate?: string;
+  endDate?: string;
+}) {
   return useQuery<{ expenses: Expense[] }>({
     queryKey: ["admin", "expenses", filters],
     queryFn: async () => {
@@ -42,6 +47,8 @@ export function useExpenses(filters?: { category?: string; paid?: boolean }) {
       if (filters?.category) params.append("category", filters.category);
       if (filters?.paid !== undefined)
         params.append("paid", filters.paid.toString());
+      if (filters?.startDate) params.append("startDate", filters.startDate);
+      if (filters?.endDate) params.append("endDate", filters.endDate);
 
       const url = `/api/admin/expenses${
         params.toString() ? `?${params.toString()}` : ""
@@ -150,4 +157,29 @@ export function useDeleteExpense() {
       toast.error(error.message);
     },
   });
+}
+
+export function downloadCSVExpenses(filters?: {
+  category?: string;
+  paid?: boolean;
+  startDate?: string;
+  endDate?: string;
+}) {
+  const params = new URLSearchParams();
+  if (filters?.category) params.append("category", filters.category);
+  if (filters?.paid !== undefined)
+    params.append("paid", filters.paid.toString());
+  if (filters?.startDate) params.append("startDate", filters.startDate);
+  if (filters?.endDate) params.append("endDate", filters.endDate);
+  params.append("format", "csv");
+
+  const url = `/api/admin/expenses?${params.toString()}`;
+
+  // Create a temporary link to download the CSV
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `expenses-${new Date().toISOString().split("T")[0]}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }

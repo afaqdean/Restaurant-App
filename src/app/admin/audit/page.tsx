@@ -199,12 +199,12 @@ export default function AdminAuditPage() {
                       <div className="text-sm text-gray-900 mb-2">
                         {log.action === "ORDER_STATUS_CHANGED" && (
                           <span>
-                            Order status changed from <strong>{oldValue?.status}</strong> to <strong>{newValue?.status}</strong>
+                            Order status changed from <strong>{typeof oldValue === 'object' ? oldValue?.status : oldValue}</strong> to <strong>{typeof newValue === 'object' ? newValue?.status : newValue}</strong>
                           </span>
                         )}
                         {log.action === "PAYMENT_STATUS_CHANGED" && (
                           <span>
-                            Payment status changed from <strong>{oldValue?.paymentStatus}</strong> to <strong>{newValue?.paymentStatus}</strong>
+                            Payment status changed from <strong>{typeof oldValue === 'object' ? oldValue?.paymentStatus : oldValue}</strong> to <strong>{typeof newValue === 'object' ? newValue?.paymentStatus : newValue}</strong>
                           </span>
                         )}
                         {log.action === "COD_PAYMENT_CONFIRMED" && (
