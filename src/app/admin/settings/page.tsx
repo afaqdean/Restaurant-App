@@ -2,7 +2,7 @@
 
 import { useSettings, useUpdateSettings, Settings } from "@/hooks/useSettings";
 import { SettingsForm } from "@/components/admin/SettingsForm";
-import { PageErrorState } from "d:/restaurant-app/src/components/ui/StandardStates"
+import { PageErrorState } from "@/components/ui/StandardStates";
 import { SkeletonAdminSettingsPage } from "@/components/ui/skeleton";
 
 export default function AdminSettingsPage() {
