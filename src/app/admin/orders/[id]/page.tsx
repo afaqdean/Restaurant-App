@@ -139,7 +139,7 @@ export default function AdminOrderDetailPage() {
         alert(data.error || "Failed to update order status");
       }
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Network error");
+      alert("Network error");
     } finally {
       setUpdatingStatus(false);
     }
@@ -188,7 +188,7 @@ export default function AdminOrderDetailPage() {
         setError(data.error || "Failed to fetch order");
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Network error");
+      setError("Network error");
     } finally {
       setLoading(false);
     }
