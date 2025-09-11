@@ -24,38 +24,38 @@ export default function RestaurantHero() {
 
   const buttons = (
     <div
-      className="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4 mb-12 md:mb-0"
+      className="w-full max-w-md mx-auto md:max-w-none md:flex md:justify-start space-y-[clamp(0.75rem,1.5vw,1rem)] md:space-y-0 md:space-x-[clamp(0.75rem,1.5vw,1rem)] mb-[clamp(2rem,3vw,3rem)] md:mb-0"
       data-aos="fade-up"
       data-aos-delay="300"
     >
-      <div>
+      <div className="w-full md:w-auto md:flex-1 md:max-w-xs">
         <Link href="/menu">
           <PrimaryButton 
             fullWidth
             icon={
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-[clamp(1rem,1.5vw,1.25rem)] h-[clamp(1rem,1.5vw,1.25rem)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
               </svg>
             }
             iconPosition="left"
-            className="shadow-lg hover:shadow-xl"
+            className="shadow-lg hover:shadow-xl text-[clamp(0.75rem,1.2vw,0.875rem)] py-[clamp(0.5rem,1vw,0.75rem)] px-[clamp(1rem,2vw,1.5rem)]"
           >
             View Menu
           </PrimaryButton>
         </Link>
       </div>
-      <div>
+      <div className="w-full md:w-auto md:flex-1 md:max-w-xs">
         <Link href="/cart">
           <PrimaryButton 
             fullWidth
             variant="solid"
             icon={
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-[clamp(1rem,1.5vw,1.25rem)] h-[clamp(1rem,1.5vw,1.25rem)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8m-8 0a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4z" />
               </svg>
             }
             iconPosition="left"
-            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl"
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl text-[clamp(0.75rem,1.2vw,0.875rem)] py-[clamp(0.5rem,1vw,0.75rem)] px-[clamp(1rem,2vw,1.5rem)]"
           >
             Order Now
           </PrimaryButton>
@@ -65,7 +65,7 @@ export default function RestaurantHero() {
   );
 
   const floatingElement = (
-    <div className="w-full h-[28rem] rounded-2xl">
+    <div className="w-full h-[clamp(16rem,35vw,28rem)] rounded-[clamp(1rem,2vw,2rem)]">
       <FloatingSteak3D />
     </div>
   );

@@ -1,0 +1,173 @@
+/* Large Screen Optimizations */
+
+/* Ultra-wide screen support */
+@media (min-width: 1920px) {
+  .container-responsive {
+    max-width: 1408px; /* 8xl */
+  }
+}
+
+@media (min-width: 2560px) {
+  .container-responsive {
+    max-width: 1664px; /* 10xl */
+  }
+}
+
+@media (min-width: 3440px) {
+  .container-responsive {
+    max-width: 1920px; /* 12xl */
+  }
+}
+
+/* Responsive typography for large screens */
+@media (min-width: 1920px) {
+  .text-responsive-xl {
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
+  }
+
+  .text-responsive-2xl {
+    font-size: 2rem; /* 32px */
+    line-height: 2.5rem; /* 40px */
+  }
+
+  .text-responsive-3xl {
+    font-size: 2.5rem; /* 40px */
+    line-height: 3rem; /* 48px */
+  }
+
+  .text-responsive-4xl {
+    font-size: 3rem; /* 48px */
+    line-height: 3.5rem; /* 56px */
+  }
+}
+
+/* Large screen spacing optimizations */
+@media (min-width: 1920px) {
+  .spacing-responsive {
+    padding-left: 4rem; /* 64px */
+    padding-right: 4rem; /* 64px */
+  }
+}
+
+@media (min-width: 2560px) {
+  .spacing-responsive {
+    padding-left: 6rem; /* 96px */
+    padding-right: 6rem; /* 96px */
+  }
+}
+
+/* Hero section large screen adjustments */
+@media (min-width: 1920px) {
+  .hero-floating-element {
+    left: 900px !important;
+  }
+}
+
+@media (min-width: 2560px) {
+  .hero-floating-element {
+    left: 1000px !important;
+  }
+}
+
+/* Menu grid optimizations for large screens */
+@media (min-width: 1920px) {
+  .menu-grid-responsive {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 2560px) {
+  .menu-grid-responsive {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+/* Card hover effects optimized for large screens */
+@media (min-width: 1920px) {
+  .card-hover-scale {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card-hover-scale:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* Navigation optimizations for large screens */
+@media (min-width: 1920px) {
+  .nav-spacing-responsive {
+    padding-left: 3rem; /* 48px */
+    padding-right: 3rem; /* 48px */
+  }
+}
+
+/* Admin dashboard large screen optimizations */
+@media (min-width: 1920px) {
+  .admin-content-responsive {
+    margin-left: 20rem; /* 320px - expanded sidebar */
+  }
+
+  .admin-content-collapsed {
+    margin-left: 5rem; /* 80px - collapsed sidebar */
+  }
+}
+
+/* Form optimizations for large screens */
+@media (min-width: 1920px) {
+  .form-grid-responsive {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem; /* 32px */
+  }
+}
+
+/* Modal optimizations for large screens */
+@media (min-width: 1920px) {
+  .modal-responsive {
+    max-width: 48rem; /* 768px */
+  }
+}
+
+@media (min-width: 2560px) {
+  .modal-responsive {
+    max-width: 56rem; /* 896px */
+  }
+}
+
+/* Button optimizations for large screens */
+@media (min-width: 1920px) {
+  .btn-responsive {
+    padding: 0.75rem 2rem; /* 12px 32px */
+    font-size: 1rem; /* 16px */
+  }
+}
+
+/* Image optimizations for large screens */
+@media (min-width: 1920px) {
+  .image-responsive {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Scrollbar optimizations for large screens */
+@media (min-width: 1920px) {
+  .scrollbar-responsive::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .scrollbar-responsive::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+
+  .scrollbar-responsive::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  .scrollbar-responsive::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}

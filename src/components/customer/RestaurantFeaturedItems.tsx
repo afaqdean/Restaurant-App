@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Star, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useRouter } from "next/navigation";
 import { PrimaryButton, NavigationButton, CartActionButton } from "@/components/ui/buttons";
@@ -13,8 +13,33 @@ import { MenuItem } from "@/types/menu";
 
 export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFeaturedItemsProps) {
   const [addingToCart, setAddingToCart] = useState<string | null>(null);
+  const [maxVisibleItems, setMaxVisibleItems] = useState(3);
   const { addToCart } = useCart();
   const router = useRouter();
+
+  // Calculate max visible items based on screen width
+  useEffect(() => {
+    const updateMaxVisibleItems = () => {
+      const width = window.innerWidth;
+      if (width >= 2560) {
+        setMaxVisibleItems(6);
+      } else if (width >= 1920) {
+        setMaxVisibleItems(5);
+      } else if (width >= 1536) {
+        setMaxVisibleItems(4);
+      } else if (width >= 1024) {
+        setMaxVisibleItems(3);
+      } else if (width >= 768) {
+        setMaxVisibleItems(2);
+      } else {
+        setMaxVisibleItems(1);
+      }
+    };
+
+    updateMaxVisibleItems();
+    window.addEventListener('resize', updateMaxVisibleItems);
+    return () => window.removeEventListener('resize', updateMaxVisibleItems);
+  }, []);
 
   const {
     currentIndex: currentSlide,
@@ -25,7 +50,7 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
   } = useCarousel({
     itemCount: featuredItems.length,
     autoPlayInterval: 3000,
-    maxVisibleItems: 3,
+    maxVisibleItems,
     isPaused: !!addingToCart,
   });
 
@@ -53,16 +78,16 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
   };
 
   return (
-    <section className="py-12 md:py-20 bg-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12 md:mb-16">
-          <p className="text-emerald-500 text-sm font-semibold uppercase tracking-wider mb-4" data-aos="fade-up">
+    <section className="py-[clamp(2rem,4vw,5rem)] bg-white w-full">
+      <div className="w-full px-[clamp(1rem,2vw,2rem)]">
+        <div className="text-center mb-[clamp(2rem,4vw,4rem)]">
+          <p className="text-emerald-500 text-[clamp(0.75rem,1.2vw,0.875rem)] font-semibold uppercase tracking-wider mb-[clamp(0.75rem,1.5vw,1rem)]" data-aos="fade-up">
             FEATURED DISHES
           </p>
-          <h2 className="h2 text-gray-900 mb-6" data-aos="fade-up" data-aos-delay="100">
+          <h2 className="text-[clamp(1.75rem,4vw,3.5rem)] font-bold text-gray-900 mb-[clamp(1rem,2vw,1.5rem)] leading-tight" data-aos="fade-up" data-aos-delay="100">
             Our Signature Creations
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+          <p className="text-[clamp(0.875rem,2vw,1.25rem)] text-gray-600 max-w-4xl mx-auto leading-relaxed" data-aos="fade-up" data-aos-delay="200">
             Discover our most popular dishes crafted with passion and the finest ingredients
           </p>
         </div>
@@ -70,54 +95,56 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
         {featuredItems.length > 0 ? (
           <div className="relative" data-aos="fade-up" data-aos-delay="300">
             {/* Slider Container */}
-            <div className="relative overflow-hidden rounded-2xl">
+            <div className="relative overflow-hidden rounded-[clamp(1rem,2vw,2rem)]">
               <div 
                 className="flex transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${currentSlide * (100 / 3)}%)` }}
+                style={{ 
+                  transform: `translateX(-${currentSlide * (100 / maxVisibleItems)}%)` 
+                }}
               >
                 {featuredItems.map((item) => (
-                  <div key={item.id} className="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 px-2 sm:px-4">
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group h-full flex flex-col border border-gray-100">
-                      <div className="relative h-48 sm:h-52 lg:h-56 overflow-hidden">
+                  <div key={item.id} className="w-full flex-shrink-0 px-[clamp(0.25rem,0.5vw,0.5rem)]" style={{ width: `${100 / maxVisibleItems}%` }}>
+                    <div className="bg-white rounded-[clamp(1rem,2vw,2rem)] shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group h-full flex flex-col border border-gray-100">
+                      <div className="relative h-[clamp(12rem,25vw,18rem)] overflow-hidden">
                         <ImageWithFallback
                           src={item.image || "/images/placeholder.png"}
                           alt={item.name}
                           fill
                           className="object-cover group-hover:scale-110 transition-transform duration-300"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 33vw, (max-width: 1920px) 25vw, 20vw"
                           fallbackElement={
                             <div className="h-full bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center">
                               <div className="text-center text-emerald-600">
-                                <div className="text-4xl sm:text-5xl mb-2">🍽️</div>
-                                <p className="text-sm font-medium">No Image</p>
+                                <div className="text-[clamp(2rem,4vw,3rem)] mb-2">🍽️</div>
+                                <p className="text-[clamp(0.75rem,1.2vw,0.875rem)] font-medium">No Image</p>
                               </div>
                             </div>
                           }
                         />
-                        <div className="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1">
-                          <Star className="h-3 w-3 sm:h-4 sm:w-4" />
+                        <div className="absolute top-[clamp(0.5rem,1vw,0.75rem)] right-[clamp(0.5rem,1vw,0.75rem)] bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-[clamp(0.5rem,1vw,0.75rem)] py-[clamp(0.25rem,0.5vw,0.5rem)] rounded-full text-[clamp(0.625rem,1vw,0.75rem)] font-semibold flex items-center gap-1">
+                          <Star className="h-[clamp(0.75rem,1.2vw,1rem)] w-[clamp(0.75rem,1.2vw,1rem)]" />
                           Featured
                         </div>
                       </div>
                       
-                      <div className="p-4 sm:p-6 flex-1 flex flex-col">
-                        <div className="flex justify-between items-start mb-3">
-                          <h3 className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2 flex-1 mr-2">
+                      <div className="p-[clamp(0.75rem,1.5vw,1.5rem)] flex-1 flex flex-col">
+                        <div className="flex justify-between items-start mb-[clamp(0.5rem,1vw,0.75rem)]">
+                          <h3 className="text-[clamp(0.875rem,1.8vw,1.25rem)] font-bold text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2 flex-1 mr-2">
                             {item.name}
                           </h3>
-                          <span className="text-xl sm:text-2xl font-bold text-emerald-600 flex-shrink-0">
+                          <span className="text-[clamp(1rem,2vw,1.5rem)] font-bold text-emerald-600 flex-shrink-0">
                             {item.formattedPrice}
                           </span>
                         </div>
                         
                         {item.description && (
-                          <p className="text-sm sm:text-base text-gray-600 mb-4 line-clamp-2 flex-1">
+                          <p className="text-[clamp(0.75rem,1.2vw,0.875rem)] text-gray-600 mb-[clamp(0.75rem,1.5vw,1rem)] line-clamp-2 flex-1 leading-relaxed">
                             {item.description}
                           </p>
                         )}
                         
                         <div className="flex items-center justify-between mt-auto">
-                          <span className="text-xs sm:text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                          <span className="text-[clamp(0.625rem,1vw,0.75rem)] text-gray-500 bg-gray-100 px-[clamp(0.5rem,1vw,0.75rem)] py-[clamp(0.25rem,0.5vw,0.5rem)] rounded-full">
                             {item.category.name}
                           </span>
                           <CartActionButton
@@ -128,6 +155,7 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
                             size="md"
                             isLoading={addingToCart === item.id}
                             loadingText="Adding..."
+                            className="text-[clamp(0.625rem,1vw,0.75rem)] py-[clamp(0.25rem,0.5vw,0.5rem)] px-[clamp(0.5rem,1vw,0.75rem)]"
                           >
                             Order Now
                           </CartActionButton>
@@ -140,13 +168,13 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
             </div>
 
             {/* Navigation Arrows */}
-            {featuredItems.length > 3 && (
+            {featuredItems.length > maxVisibleItems && (
               <>
                 <NavigationButton
                   direction="prev"
                   variant="carousel"
                   onClick={prevSlide}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10"
+                  className="absolute left-[clamp(0.5rem,1vw,1rem)] top-1/2 transform -translate-y-1/2 z-10 w-[clamp(2.5rem,3vw,3rem)] h-[clamp(2.5rem,3vw,3rem)]"
                 >
                   ←
                 </NavigationButton>
@@ -154,7 +182,7 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
                   direction="next"
                   variant="carousel"
                   onClick={nextSlide}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10"
+                  className="absolute right-[clamp(0.5rem,1vw,1rem)] top-1/2 transform -translate-y-1/2 z-10 w-[clamp(2.5rem,3vw,3rem)] h-[clamp(2.5rem,3vw,3rem)]"
                 >
                   →
                 </NavigationButton>
@@ -162,9 +190,9 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
             )}
 
             {/* Slide Indicators */}
-            {featuredItems.length > 3 && (
-              <div className="flex justify-center mt-8 space-x-2">
-                {Array.from({ length: featuredItems.length - 2 }).map((_, index) => (
+            {featuredItems.length > maxVisibleItems && (
+              <div className="flex justify-center mt-[clamp(1.5rem,3vw,2rem)] space-x-[clamp(0.25rem,0.5vw,0.5rem)]">
+                {Array.from({ length: Math.max(1, featuredItems.length - maxVisibleItems + 1) }).map((_, index) => (
                   <NavigationButton
                     key={index}
                     direction="next"
@@ -173,6 +201,7 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
                     onClick={() => goToSlide(index)}
                     isActive={index === currentSlide}
                     label={`Go to slide ${index + 1}`}
+                    className="w-[clamp(0.5rem,0.8vw,0.75rem)] h-[clamp(0.5rem,0.8vw,0.75rem)]"
                   >
                     •
                   </NavigationButton>
@@ -181,25 +210,25 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
             )}
           </div>
         ) : (
-          <div className="text-center py-12" data-aos="fade-up">
-            <div className="text-gray-400 mb-4">
-              <Star className="h-16 w-16 mx-auto" />
+          <div className="text-center py-[clamp(2rem,4vw,3rem)]" data-aos="fade-up">
+            <div className="text-gray-400 mb-[clamp(0.75rem,1.5vw,1rem)]">
+              <Star className="h-[clamp(3rem,6vw,4rem)] w-[clamp(3rem,6vw,4rem)] mx-auto" />
             </div>
-            <h3 className="text-2xl font-semibold text-gray-600 mb-2">
+            <h3 className="text-[clamp(1.25rem,2.5vw,1.5rem)] font-semibold text-gray-600 mb-[clamp(0.5rem,1vw,0.75rem)]">
               No Featured Items Yet
             </h3>
-            <p className="text-gray-500">
+            <p className="text-[clamp(0.875rem,1.5vw,1rem)] text-gray-500">
               Check back soon for our signature dishes!
             </p>
           </div>
         )}
 
-        <div className="text-center mt-12" data-aos="fade-up" data-aos-delay="400">
+        <div className="text-center mt-[clamp(2rem,3vw,3rem)]" data-aos="fade-up" data-aos-delay="400">
           <Link href="/menu">
             <PrimaryButton
               size="sm"
-              icon={<ArrowRight className="h-4 w-4" />}
-              className="shadow-xs"
+              icon={<ArrowRight className="h-[clamp(0.875rem,1.2vw,1rem)] w-[clamp(0.875rem,1.2vw,1rem)]" />}
+              className="shadow-xs text-[clamp(0.75rem,1.2vw,0.875rem)] py-[clamp(0.5rem,1vw,0.75rem)] px-[clamp(1rem,2vw,1.5rem)]"
             >
               View Full Menu
             </PrimaryButton>

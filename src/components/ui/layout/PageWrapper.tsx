@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 interface PageWrapperProps {
   children: ReactNode;
   className?: string;
-  maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "4xl" | "6xl" | "7xl";
+  maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "4xl" | "6xl" | "7xl" | "8xl" | "9xl" | "10xl" | "11xl" | "12xl" | "full";
   padding?: "none" | "sm" | "md" | "lg";
 }
 
@@ -21,7 +21,13 @@ export function PageWrapper({
     "2xl": "max-w-2xl",
     "4xl": "max-w-4xl",
     "6xl": "max-w-6xl",
-    "7xl": "max-w-7xl"
+    "7xl": "max-w-7xl",
+    "8xl": "max-w-8xl",
+    "9xl": "max-w-9xl",
+    "10xl": "max-w-10xl",
+    "11xl": "max-w-11xl",
+    "12xl": "max-w-12xl",
+    "full": "max-w-full"
   };
 
   const paddingClasses = {

@@ -11,7 +11,7 @@ export default function Navigation() {
 
   return (
     <nav className="sticky top-0 bg-slate-900/95 backdrop-blur-sm shadow-lg z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl 2xl:max-w-8xl 3xl:max-w-10xl 4xl:max-w-15xl 5xl:max-w-20xl 6xl:max-w-25xl mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 3xl:px-16 4xl:px-20 5xl:px-24 6xl:px-32">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center">

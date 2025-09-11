@@ -73,7 +73,7 @@ export default function MenuPage() {
 
       {/* Menu Categories Sections */}
       {filteredCategories.length > 0 ? (
-        <div className="space-y-8 bg-gray-50">
+        <div className="space-y-[clamp(1rem,2vw,2rem)] bg-gray-50">
           {filteredCategories.map((category) => (
             <MenuCategorySlider
               key={category.id}

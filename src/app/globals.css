@@ -51,6 +51,8 @@
 
 /* Additional styles */
 @import "./css/additional-styles/utility-patterns.css" layer(components);
+@import "./css/additional-styles/large-screen-optimizations.css"
+  layer(components);
 
 @plugin "@tailwindcss/forms" {
   strategy: base;

@@ -9,27 +9,27 @@ const SECTION_CLASSES = {
 } as const;
 
 const CONTAINER_CLASSES = {
-  restaurant: "max-w-6xl mx-auto px-4 sm:px-6",
-  menu: "max-w-6xl mx-auto px-4 sm:px-6",
+  restaurant: "w-full px-[clamp(1rem,2vw,2rem)]",
+  menu: "w-full px-[clamp(1rem,2vw,2rem)]",
   simple: ""
 } as const;
 
 const CONTENT_CLASSES = {
-  restaurant: "relative max-w-xl mx-auto md:max-w-none text-center md:text-left",
+  restaurant: "relative w-full text-center md:text-left md:grid md:grid-cols-2 md:items-center md:gap-[clamp(2rem,6vw,8rem)]",
   menu: "text-center",
   simple: "text-center"
 } as const;
 
 const TITLE_CLASSES = {
-  restaurant: "h1 text-white mb-6",
-  menu: "text-5xl md:text-6xl font-bold text-gray-900 mb-6",
-  simple: "text-4xl md:text-5xl font-bold text-gray-900 mb-6"
+  restaurant: "text-[clamp(2rem,5vw,4rem)] font-bold text-white mb-[clamp(1rem,2vw,1.5rem)] leading-tight",
+  menu: "text-[clamp(2.5rem,5vw,4rem)] font-bold text-gray-900 mb-[clamp(1rem,2vw,1.5rem)] leading-tight",
+  simple: "text-[clamp(2rem,4vw,3.5rem)] font-bold text-gray-900 mb-[clamp(1rem,2vw,1.5rem)] leading-tight"
 } as const;
 
 const SUBTITLE_CLASSES = {
-  restaurant: "text-lg text-slate-300 mb-8",
-  menu: "text-xl text-gray-600 max-w-3xl mx-auto",
-  simple: "text-xl text-gray-600 max-w-2xl mx-auto"
+  restaurant: "text-[clamp(0.875rem,2vw,1.25rem)] text-slate-300 mb-[clamp(1.5rem,3vw,2.5rem)] leading-relaxed",
+  menu: "text-[clamp(1rem,2vw,1.25rem)] text-gray-600 max-w-4xl mx-auto leading-relaxed",
+  simple: "text-[clamp(1rem,2vw,1.25rem)] text-gray-600 max-w-3xl mx-auto leading-relaxed"
 } as const;
 
 export function Hero({
@@ -51,11 +51,11 @@ export function Hero({
     const childrenArray = React.Children.toArray(children);
     const buttons = childrenArray.find(child => 
       React.isValidElement(child) && 
-      child.props?.className?.includes('max-w-xs mx-auto sm:max-w-none')
+      child.props?.className?.includes('w-full max-w-md mx-auto')
     );
     const floatingElement = childrenArray.find(child => 
       React.isValidElement(child) && 
-      child.props?.className?.includes('w-full h-[28rem]')
+      child.props?.className?.includes('w-full h-[')
     );
 
     return { buttons, floatingElement };
@@ -76,7 +76,7 @@ export function Hero({
     
     return (
       <div
-        className="absolute inset-0 rounded-bl-[100px] mb-28 md:mb-0 bg-slate-900 pointer-events-none -z-10"
+        className="absolute inset-0 rounded-bl-[clamp(50px,8vw,100px)] mb-[clamp(4rem,8vw,7rem)] md:mb-0 bg-slate-900 pointer-events-none -z-10"
         aria-hidden="true"
       />
     );
@@ -87,7 +87,7 @@ export function Hero({
     if (variant !== 'restaurant') return null;
 
     return (
-      <div className="md:w-[600px]">
+      <div className="w-full md:max-w-none">
         <h1 className={classes.title} data-aos="fade-up" data-aos-delay="100">
           {title}
         </h1>
@@ -125,8 +125,8 @@ export function Hero({
     if (!floatingElement || variant !== 'restaurant') return null;
 
     return (
-      <div className="max-w-2xl mx-auto md:max-w-none md:absolute md:left-[550px] lg:left-[660px] xl:left-[715px] md:top-[-40%] -mb-12 md:-mt-8 md:mb-0">
-        <div className="relative -ml-3 -mr-24 md:mx-0">
+      <div className="w-full md:flex-1 mt-[clamp(1rem,3vw,2rem)] md:mt-0">
+        <div className="relative w-full flex justify-center md:justify-end">
           {floatingElement}
         </div>
       </div>
@@ -139,7 +139,7 @@ export function Hero({
       
       {variant === 'restaurant' ? (
         <div className={classes.container}>
-          <div className="pt-8 md:pt-12 md:pb-20">
+          <div className="pt-[clamp(1rem,2vw,3rem)] pb-[clamp(2rem,4vw,5rem)]">
             <div className={classes.content}>
               {restaurantContent}
               {floatingElementRender}
