@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { SkeletonBase, SkeletonBox, SkeletonText, SkeletonButton } from "./SkeletonBase";
+import { SkeletonBase, SkeletonBox, SkeletonText, SkeletonButton, SkeletonImage } from "./SkeletonBase";
 
 interface SkeletonFormFieldProps {
   label?: boolean;

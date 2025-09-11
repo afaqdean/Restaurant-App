@@ -57,8 +57,14 @@ export {
   SkeletonPaymentPage,
   SkeletonCartPage,
   SkeletonAdminDashboard,
-  SkeletonAdminOrdersPage,
   SkeletonAdminMenuPage,
   SkeletonAdminReportsPage,
   SkeletonAdminSettingsPage,
 } from "./SkeletonPages";
+
+// Consolidated skeleton components
+export { SkeletonAdminPage } from "./SkeletonAdminPage";
+export { SkeletonCustomerPage } from "./SkeletonCustomerPage";
+
+// Item Tracker skeleton component (can be replaced with SkeletonAdminPage)
+export { SkeletonItemTrackerPage } from "./SkeletonItemTrackerPage";

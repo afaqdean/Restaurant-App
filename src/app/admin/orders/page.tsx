@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { PageErrorState } from "@/components/ui/StandardStates";
 import { FilterPopupButton } from "@/components/ui/buttons";
-import { SkeletonAdminOrdersPage } from "@/components/ui/skeleton";
+import { SkeletonAdminPage } from "@/components/ui/skeleton";
 import { OrderStatusDropdown } from "@/components/ui/OrderStatusDropdown";
 import { useOrdersPage } from "@/hooks/useOrdersPage";
 
@@ -112,7 +112,17 @@ export default function AdminOrdersPage() {
 
 
   if (loading) {
-    return <SkeletonAdminOrdersPage />;
+    return (
+      <SkeletonAdminPage
+        titleWidth={64}
+        subtitleWidth={80}
+        showFilterButton={true}
+        filterButtonWidth={100}
+        tableColumns={7}
+        tableRows={8}
+        showPagination={true}
+      />
+    );
   }
 
   if (error) {

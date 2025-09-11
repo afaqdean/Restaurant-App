@@ -14,7 +14,8 @@ import {
   Utensils,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Package
 } from "lucide-react";
 import { UserMenu } from "./UserMenu";
 
@@ -48,10 +49,16 @@ export function AdminDrawer({ isOpen, onToggle, isCollapsed, onToggleCollapse }:
       current: pathname.startsWith("/admin/menu"),
     },
     {
+      name: "Item Tracker",
+      href: "/admin/reports/items",
+      icon: Package,
+      current: pathname.startsWith("/admin/reports/items"),
+    },
+    {
       name: "Reports",
       href: "/admin/reports",
       icon: BarChart3,
-      current: pathname.startsWith("/admin/reports"),
+      current: pathname.startsWith("/admin/reports") && !pathname.startsWith("/admin/reports/items"),
     },
     {
       name: "Expenses",

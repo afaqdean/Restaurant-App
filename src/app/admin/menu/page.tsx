@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Plus, Edit, Trash2, Eye, EyeOff } from "lucide-react";
 import { ImageWithFallback } from "@/components/ui";
-import { SkeletonAdminMenuPage } from "@/components/ui/skeleton";
+import { SkeletonAdminPage } from "@/components/ui/skeleton";
 import { 
   useCategories, 
   useItems, 
@@ -99,7 +99,17 @@ export default function AdminMenuPage() {
   };
 
   if (categoriesLoading || itemsLoading) {
-    return <SkeletonAdminMenuPage />;
+    return (
+      <SkeletonAdminPage
+        titleWidth={64}
+        subtitleWidth={80}
+        showActionButton={true}
+        actionButtonWidth={128}
+        tableColumns={6}
+        tableRows={8}
+        showPagination={true}
+      />
+    );
   }
 
   return (

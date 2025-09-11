@@ -355,36 +355,6 @@ export const SkeletonAdminDashboard = memo(function SkeletonAdminDashboard({
   );
 });
 
-interface SkeletonAdminOrdersPageProps {
-  className?: string;
-}
-
-export const SkeletonAdminOrdersPage = memo(function SkeletonAdminOrdersPage({
-  className = ""
-}: SkeletonAdminOrdersPageProps) {
-  return (
-    <SkeletonBase className={`min-h-screen bg-gray-50 ${className}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <SkeletonText lines={1} lineHeight="lg" className="w-80 text-4xl" />
-          <SkeletonText lines={1} lineHeight="md" className="w-96 text-xl mt-2" />
-        </div>
-
-        {/* Filter Button */}
-        <div className="flex justify-end mb-6">
-          <SkeletonButton size="md" className="w-24" />
-        </div>
-
-        {/* Orders Table */}
-        <SkeletonOrdersTable rows={8} className="mb-4" />
-
-        {/* Pagination */}
-        <SkeletonPagination />
-      </div>
-    </SkeletonBase>
-  );
-});
 
 interface SkeletonAdminMenuPageProps {
   className?: string;

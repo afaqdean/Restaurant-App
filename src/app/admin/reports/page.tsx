@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Download, Calendar, TrendingUp, TrendingDown, DollarSign, CreditCard, Banknote } from "lucide-react";
+import Link from "next/link";
+import { Download, Calendar, TrendingUp, TrendingDown, DollarSign, CreditCard, Banknote, BarChart3, ShoppingCart } from "lucide-react";
 import { useReports, downloadCSVReport } from "@/hooks/useReports";
 import { PageLoadingState, PageErrorState } from "@/components/ui/StandardStates";
 import { SkeletonAdminReportsPage } from "@/components/ui/skeleton";
@@ -47,12 +48,18 @@ export default function AdminReportsPage() {
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="mb-8" data-aos="fade-up">
-        <h1 className="text-4xl font-bold text-gray-900 mb-3">Financial Reports</h1>
-        <p className="text-lg text-gray-600">View your restaurant's financial performance and analytics.</p>
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">Reports</h1>
+        <p className="text-lg text-gray-600">View your restaurant's performance and analytics.</p>
+      </div>
+
+      {/* Financial Reports Section */}
+      <div className="mb-8" data-aos="fade-up" data-aos-delay="100">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Financial Reports</h2>
+        <p className="text-gray-600">View your restaurant's financial performance and analytics.</p>
       </div>
 
       {/* Date Range Controls */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8" data-aos="fade-up" data-aos-delay="100">
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8" data-aos="fade-up" data-aos-delay="200">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div className="flex items-center space-x-4">
             <Calendar className="w-5 h-5 text-gray-400" />
@@ -113,7 +120,7 @@ export default function AdminReportsPage() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" data-aos="fade-up" data-aos-delay="200">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" data-aos="fade-up" data-aos-delay="300">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -186,7 +193,7 @@ export default function AdminReportsPage() {
       </div>
 
       {/* Payment Method Split */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8" data-aos="fade-up" data-aos-delay="400">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Method Revenue</h3>
           <div className="space-y-4">
