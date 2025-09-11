@@ -17,6 +17,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: false,
   },
+  experimental: {
+    serverComponentsExternalPackages: ["puppeteer"],
+  },
 };
 
 module.exports = nextConfig;
