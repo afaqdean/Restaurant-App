@@ -14,7 +14,11 @@ import {
   useUpdateItem,
   useDeleteItem,
   Category,
-  Item
+  Item,
+  CreateCategoryData,
+  UpdateCategoryData,
+  CreateItemData,
+  UpdateItemData
 } from "@/hooks/useMenuManagement";
 import { CategoryForm } from "@/components/admin/CategoryForm";
 import { ItemForm } from "@/components/admin/ItemForm";
@@ -42,21 +46,21 @@ export default function AdminMenuPage() {
 
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
-  const handleCategorySubmit = (data: any) => {
+  const handleCategorySubmit = (data: CreateCategoryData | UpdateCategoryData) => {
     if (editingCategory) {
-      updateCategory.mutate({ id: editingCategory.id, data });
+      updateCategory.mutate({ id: editingCategory.id, data: data as UpdateCategoryData });
     } else {
-      createCategory.mutate(data);
+      createCategory.mutate(data as CreateCategoryData);
     }
     setShowCategoryForm(false);
     setEditingCategory(null);
   };
 
-  const handleItemSubmit = (data: any) => {
+  const handleItemSubmit = (data: CreateItemData | UpdateItemData) => {
     if (editingItem) {
-      updateItem.mutate({ id: editingItem.id, data });
+      updateItem.mutate({ id: editingItem.id, data: data as UpdateItemData });
     } else {
-      createItem.mutate(data);
+      createItem.mutate(data as CreateItemData);
     }
     setShowItemForm(false);
     setEditingItem(null);
@@ -116,7 +120,7 @@ export default function AdminMenuPage() {
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="mb-8" data-aos="fade-up">
         <h1 className="text-4xl font-bold text-gray-900 mb-3">Menu Management</h1>
-        <p className="text-lg text-gray-600">Manage your restaurant's menu categories and items.</p>
+        <p className="text-lg text-gray-600">Manage your restaurant&apos;s menu categories and items.</p>
       </div>
 
       {/* Tabs */}

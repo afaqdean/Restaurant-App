@@ -1,12 +1,12 @@
-import { Category } from "@/types/menu";
+import { Category, MenuItem } from "@/types/menu";
 import { MenuItemCard } from "./MenuItemCard";
 import { useCarousel } from "@/hooks/useCarousel";
 import { NavigationButton } from "@/components/ui/buttons";
 
 interface MenuCategorySliderProps {
   category: Category;
-  onItemClick: (item: any) => void;
-  onAddToCart: (item: any) => void;
+  onItemClick: (item: MenuItem) => void;
+  onAddToCart: (item: MenuItem) => void;
   addingToCartItemId: string | null;
   className?: string;
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { requireAdmin } from "@/lib/auth-utils";
 import { useDashboard } from "@/hooks/useDashboard";
 import { KPICard } from "@/components/admin/KPICard";
 import { PaymentSplitCard } from "@/components/admin/PaymentSplitCard";
@@ -11,8 +10,6 @@ import {
   DollarSign, 
   TrendingUp, 
   Clock,
-  Package,
-  Users
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
@@ -42,21 +39,21 @@ export default function AdminDashboardPage() {
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="mb-8" data-aos="fade-up">
         <h1 className="text-4xl font-bold text-gray-900 mb-3">Admin Dashboard</h1>
-        <p className="text-lg text-gray-600">Welcome back! Here's your restaurant overview.</p>
+        <p className="text-lg text-gray-600">Welcome back! Here&apos;s your restaurant overview.</p>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" data-aos="fade-up" data-aos-delay="100">
         <KPICard
-          title="Today's Orders"
+          title="Today&apos;s Orders"
           value={kpis?.todaysOrders || 0}
           subtitle="Orders placed today"
           icon={ShoppingCart}
         />
         <KPICard
-          title="Today's Revenue"
+          title="Today&apos;s Revenue"
           value={formatPrice(kpis?.todaysRevenue || 0)}
-          subtitle="Revenue from today's orders"
+          subtitle="Revenue from today&apos;s orders"
           icon={DollarSign}
         />
         <KPICard

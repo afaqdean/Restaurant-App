@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
@@ -11,7 +11,6 @@ import {
   Banknote, 
   Phone, 
   Mail,
-  Edit,
   CheckCircle,
   XCircle,
   AlertCircle
@@ -74,7 +73,6 @@ interface OrderStatusHistory {
 
 export default function AdminOrderDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const orderId = params.id as string;
   
   const [order, setOrder] = useState<Order | null>(null);
@@ -167,7 +165,7 @@ export default function AdminOrderDetailPage() {
         alert(data.error || "Failed to confirm payment");
       }
     } catch (error) {
-      alert("Network error");
+      alert(error instanceof Error ? error.message : "Network error");
     } finally {
       setUpdatingPayment(false);
     }
@@ -377,7 +375,7 @@ export default function AdminOrderDetailPage() {
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <h2 className="text-xl font-semibold mb-4">Order Timeline</h2>
               <div className="space-y-4">
-                {statusHistory.map((entry, index) => (
+                {statusHistory.map((entry) => (
                   <div key={entry.id} className="flex items-start space-x-3">
                     <div className="flex-shrink-0">
                       <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">

@@ -2,6 +2,7 @@
 export interface SignInFormData {
   email: string;
   password: string;
+  [key: string]: unknown;
 }
 
 export interface SignUpFormData {
@@ -11,6 +12,7 @@ export interface SignUpFormData {
   confirmPassword: string;
   phone: string;
   address: string;
+  [key: string]: unknown;
 }
 
 // Component prop types

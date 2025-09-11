@@ -67,7 +67,7 @@ export function SettingsForm({
     },
   });
 
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = (data: z.infer<typeof settingsSchema>) => {
     onSubmit(data);
   };
 
@@ -87,7 +87,7 @@ export function SettingsForm({
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as "business" | "taxes" | "stripe" | "general")}
                 className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
                   activeTab === tab.id
                     ? "border-emerald-500 text-emerald-600"

@@ -31,7 +31,10 @@ export async function requireStaff() {
   return user;
 }
 
-export function hasRole(user: any, role: string | string[]) {
+export function hasRole(
+  user: { role: string } | null,
+  role: string | string[]
+) {
   if (!user) return false;
   const roles = Array.isArray(role) ? role : [role];
   return roles.includes(user.role);

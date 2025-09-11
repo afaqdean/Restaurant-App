@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { UseAuthFormProps } from "@/types";
 
-export function useAuthForm<T extends Record<string, any>>({
+export function useAuthForm<T extends Record<string, unknown>>({
   initialValues,
   onSubmit,
   validate,

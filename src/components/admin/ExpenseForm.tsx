@@ -40,7 +40,7 @@ export function ExpenseForm({
     },
   });
 
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = (data: z.infer<typeof expenseSchema>) => {
     const submitData = {
       ...data,
       amount: Math.round(data.amount * 100), // Convert to cents

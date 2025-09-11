@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Clock, User, Package, Filter } from "lucide-react";
-import { useAuditLogs, AuditLog } from "@/hooks/useAuditLogs";
+import { useAuditLogs } from "@/hooks/useAuditLogs";
 
 export default function AdminAuditPage() {
   const [filters, setFilters] = useState<{ orderId?: string }>({});

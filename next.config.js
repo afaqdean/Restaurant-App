@@ -10,6 +10,13 @@ const nextConfig = {
       },
     ],
   },
+  serverExternalPackages: ["puppeteer"],
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
 };
 
 module.exports = nextConfig;

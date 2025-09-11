@@ -17,7 +17,7 @@ async function addToCart(
   itemId: string,
   quantity: number,
   notes?: string,
-  selectedOptions?: any[]
+  selectedOptions?: { id: string; name: string; price: number }[]
 ) {
   const response = await fetch("/api/cart", {
     method: "POST",
@@ -42,7 +42,7 @@ async function updateCartItem(
   itemId: string,
   quantity: number,
   notes?: string,
-  selectedOptions?: any[]
+  selectedOptions?: { id: string; name: string; price: number }[]
 ) {
   const response = await fetch("/api/cart", {
     method: "PUT",
@@ -137,7 +137,7 @@ export function useAddToCart() {
       itemId: string;
       quantity: number;
       notes?: string;
-      selectedOptions?: any[];
+      selectedOptions?: { id: string; name: string; price: number }[];
     }) => addToCart(itemId, quantity, notes, selectedOptions),
     onSuccess: () => {
       // Invalidate and refetch cart data
@@ -159,7 +159,7 @@ export function useUpdateCartItem() {
       itemId: string;
       quantity: number;
       notes?: string;
-      selectedOptions?: any[];
+      selectedOptions?: { id: string; name: string; price: number }[];
     }) => updateCartItem(itemId, quantity, notes, selectedOptions),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: cartKeys.all });

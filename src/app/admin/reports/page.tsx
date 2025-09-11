@@ -49,13 +49,13 @@ export default function AdminReportsPage() {
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="mb-8" data-aos="fade-up">
         <h1 className="text-4xl font-bold text-gray-900 mb-3">Reports</h1>
-        <p className="text-lg text-gray-600">View your restaurant's performance and analytics.</p>
+        <p className="text-lg text-gray-600">View your restaurant&apos;s performance and analytics.</p>
       </div>
 
       {/* Financial Reports Section */}
       <div className="mb-8" data-aos="fade-up" data-aos-delay="100">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Financial Reports</h2>
-        <p className="text-gray-600">View your restaurant's financial performance and analytics.</p>
+        <p className="text-gray-600">View your restaurant&apos;s financial performance and analytics.</p>
       </div>
 
       {/* Date Range Controls */}

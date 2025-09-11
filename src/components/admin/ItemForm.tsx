@@ -43,7 +43,7 @@ export function ItemForm({
     },
   });
 
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = (data: z.infer<typeof itemSchema>) => {
     const submitData = {
       ...data,
       price: Math.round(data.price * 100), // Convert to cents

@@ -141,7 +141,7 @@ export async function GET(request: NextRequest) {
     const format = searchParams.get("format") || "json";
 
     // Build date filter
-    const dateFilter: any = {};
+    const dateFilter: { createdAt?: { gte?: Date; lte?: Date } } = {};
     if (startDate || endDate) {
       dateFilter.createdAt = {};
       if (startDate) {
@@ -157,7 +157,15 @@ export async function GET(request: NextRequest) {
 
     const expenses = await prisma.expense.findMany({
       where: {
-        ...(category && { category: category as any }),
+        ...(category && {
+          category: category as
+            | "FOOD"
+            | "UTILITIES"
+            | "RENT"
+            | "SUPPLIES"
+            | "MARKETING"
+            | "OTHER",
+        }),
         ...(paid !== null && { paid: paid === "true" }),
         ...dateFilter,
       },

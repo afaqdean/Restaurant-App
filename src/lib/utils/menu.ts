@@ -15,24 +15,34 @@ export function formatPrice(priceInCents: number): string {
 /**
  * Format menu item with formatted prices
  */
-export function formatMenuItem(item: any) {
+export function formatMenuItem(item: {
+  price: number;
+  optionGroups?: Array<{ options?: Array<{ price: number }> }>;
+}) {
   return {
     ...item,
     formattedPrice: formatPrice(item.price),
-    optionGroups: item.optionGroups?.map((group: any) => ({
-      ...group,
-      options: group.options?.map((option: any) => ({
-        ...option,
-        formattedPrice: formatPrice(option.price),
-      })),
-    })),
+    optionGroups: item.optionGroups?.map(
+      (group: { options?: Array<{ price: number }> }) => ({
+        ...group,
+        options: group.options?.map((option: { price: number }) => ({
+          ...option,
+          formattedPrice: formatPrice(option.price),
+        })),
+      })
+    ),
   };
 }
 
 /**
  * Format category with formatted items
  */
-export function formatCategory(category: any) {
+export function formatCategory(category: {
+  items?: Array<{
+    price: number;
+    optionGroups?: Array<{ options?: Array<{ price: number }> }>;
+  }>;
+}) {
   return {
     ...category,
     items: category.items?.map(formatMenuItem),
@@ -42,7 +52,7 @@ export function formatCategory(category: any) {
 /**
  * Build query string from parameters
  */
-export function buildMenuQueryString(params: Record<string, any>): string {
+export function buildMenuQueryString(params: Record<string, unknown>): string {
   const searchParams = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
@@ -53,6 +63,3 @@ export function buildMenuQueryString(params: Record<string, any>): string {
 
   return searchParams.toString();
 }
-
-
-

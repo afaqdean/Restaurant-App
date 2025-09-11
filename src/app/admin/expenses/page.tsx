@@ -8,7 +8,9 @@ import {
   useUpdateExpense, 
   useDeleteExpense,
   downloadCSVExpenses,
-  Expense
+  Expense,
+  CreateExpenseData,
+  UpdateExpenseData
 } from "@/hooks/useExpenses";
 import { ExpenseForm } from "@/components/admin/ExpenseForm";
 import { LoadingState } from "@/components/ui/StandardStates";
@@ -77,11 +79,11 @@ export default function AdminExpensesPage() {
     return labels[category as keyof typeof labels] || category;
   };
 
-  const handleExpenseSubmit = (data: any) => {
+  const handleExpenseSubmit = (data: CreateExpenseData | UpdateExpenseData) => {
     if (editingExpense) {
-      updateExpense.mutate({ id: editingExpense.id, data });
+      updateExpense.mutate({ id: editingExpense.id, data: data as UpdateExpenseData });
     } else {
-      createExpense.mutate(data);
+      createExpense.mutate(data as CreateExpenseData);
     }
     setShowForm(false);
     setEditingExpense(null);

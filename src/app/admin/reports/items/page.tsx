@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { PageErrorState } from "@/components/ui/StandardStates";
 import { ItemReportTable } from "@/components/admin/ItemReportTable";
 import { ItemFilterPopupButton } from "@/components/admin/ItemFilterPopupButton";
@@ -25,7 +24,6 @@ export default function AdminItemReportPage() {
     handleCategoryFilterChange,
     handleSearchFilterChange,
     clearFilters,
-    refetch,
     goToPage,
     goToNextPage,
     goToPreviousPage,
