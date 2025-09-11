@@ -27,7 +27,7 @@ export class DashboardService {
       today.getDate() + 1
     );
 
-    // Get today's orders
+    // Get today's orders (exclude CART and CANCELLED orders)
     const todaysOrdersData = await prisma.order.findMany({
       where: {
         createdAt: {
@@ -35,7 +35,7 @@ export class DashboardService {
           lt: endOfDay,
         },
         status: {
-          not: "CANCELLED",
+          notIn: ["CART", "CANCELLED"],
         },
       },
       include: {
@@ -62,11 +62,11 @@ export class DashboardService {
       },
     });
 
-    // Get open orders (not completed or cancelled)
+    // Get open orders (not completed, cancelled, or cart)
     const openOrders = await prisma.order.count({
       where: {
         status: {
-          notIn: ["COMPLETED", "CANCELLED"],
+          notIn: ["COMPLETED", "CANCELLED", "CART"],
         },
       },
     });
@@ -74,7 +74,9 @@ export class DashboardService {
     // Calculate today's metrics
     const todaysOrders = todaysOrdersData.length;
     const todaysRevenue = todaysOrdersData.reduce((sum, order) => {
-      return sum + (order.payments.length > 0 ? order.total : 0);
+      return (
+        sum + (order.payments && order.payments.length > 0 ? order.total : 0)
+      );
     }, 0);
 
     // Calculate payment method splits for today
@@ -88,19 +90,25 @@ export class DashboardService {
     const todaysStripeRevenue = todaysOrdersData
       .filter((order) => order.paymentMethod === "CARD")
       .reduce((sum, order) => {
-        return sum + (order.payments.length > 0 ? order.total : 0);
+        return (
+          sum + (order.payments && order.payments.length > 0 ? order.total : 0)
+        );
       }, 0);
 
     const todaysCodRevenue = todaysOrdersData
       .filter((order) => order.paymentMethod === "COD")
       .reduce((sum, order) => {
-        return sum + (order.payments.length > 0 ? order.total : 0);
+        return (
+          sum + (order.payments && order.payments.length > 0 ? order.total : 0)
+        );
       }, 0);
 
     // Calculate overall metrics
     const totalOrders = completedOrdersData.length;
     const totalRevenue = completedOrdersData.reduce((sum, order) => {
-      return sum + (order.payments.length > 0 ? order.total : 0);
+      return (
+        sum + (order.payments && order.payments.length > 0 ? order.total : 0)
+      );
     }, 0);
 
     const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
@@ -116,13 +124,17 @@ export class DashboardService {
     const stripeRevenue = completedOrdersData
       .filter((order) => order.paymentMethod === "CARD")
       .reduce((sum, order) => {
-        return sum + (order.payments.length > 0 ? order.total : 0);
+        return (
+          sum + (order.payments && order.payments.length > 0 ? order.total : 0)
+        );
       }, 0);
 
     const codRevenue = completedOrdersData
       .filter((order) => order.paymentMethod === "COD")
       .reduce((sum, order) => {
-        return sum + (order.payments.length > 0 ? order.total : 0);
+        return (
+          sum + (order.payments && order.payments.length > 0 ? order.total : 0)
+        );
       }, 0);
 
     return {
@@ -143,7 +155,7 @@ export class DashboardService {
     return await prisma.order.findMany({
       where: {
         status: {
-          not: "CANCELLED",
+          notIn: ["CART", "CANCELLED"],
         },
       },
       include: {

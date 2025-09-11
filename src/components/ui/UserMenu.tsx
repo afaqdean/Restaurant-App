@@ -14,7 +14,7 @@ export function UserMenu() {
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+          className="flex items-center space-x-2 text-slate-300 hover:text-emerald-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
         >
           <User className="h-5 w-5" />
           <span>Guest</span>
@@ -36,15 +36,6 @@ export function UserMenu() {
               <User className="h-4 w-4 mr-2" />
               Sign In
             </Link>
-            
-            <Link
-              href="/auth/signup"
-              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              onClick={() => setIsOpen(false)}
-            >
-              <User className="h-4 w-4 mr-2" />
-              Sign Up
-            </Link>
           </div>
         )}
       </div>
@@ -55,7 +46,7 @@ export function UserMenu() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+        className="flex items-center space-x-2 text-slate-300 hover:text-emerald-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
       >
         <User className="h-5 w-5" />
         <span>{session.user.name || session.user.email}</span>

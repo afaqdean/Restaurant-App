@@ -3,10 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 export interface AuditLog {
   id: string;
   orderId?: string;
+  orderNumber?: string;
   action: string;
   oldValue?: string;
   newValue?: string;
   userId?: string;
+  userEmail?: string;
   createdAt: string;
 }
 

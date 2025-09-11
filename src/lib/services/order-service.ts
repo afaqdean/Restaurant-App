@@ -1,9 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import {
-  OrderCalculation,
-  OrderCreationResult,
-  PaymentResult,
-} from "@/types/cart";
+import { OrderCalculation, OrderCreationResult } from "@/types/cart";
+import { OrderStatus, PaymentMethod, PaymentStatus } from "@/types/order";
 import { SessionCart } from "@/types/cart";
 import { CartService } from "./cart-service";
 import { CheckoutRequest } from "@/lib/validations/cart";
@@ -56,25 +53,74 @@ export class OrderService {
   async calculateOrderTotals(
     sessionCart: SessionCart
   ): Promise<OrderCalculation> {
-    const cartSummary = await this.cartService.calculateCartSummary(
-      sessionCart
-    );
+    // Calculate subtotal from session cart items
+    let subtotal = 0;
+    for (const cartItem of Object.values(sessionCart.items)) {
+      // Get item price from database
+      const item = await prisma.item.findUnique({
+        where: { id: cartItem.itemId },
+        select: { price: true },
+      });
+
+      if (item) {
+        let itemPrice = item.price;
+
+        // Add option prices if any
+        if (cartItem.selectedOptions && cartItem.selectedOptions.length > 0) {
+          const optionIds = cartItem.selectedOptions.map((opt) => opt.optionId);
+          const options = await prisma.itemOption.findMany({
+            where: { id: { in: optionIds } },
+            select: { price: true },
+          });
+
+          const optionPrices = options.reduce(
+            (sum, option) => sum + option.price,
+            0
+          );
+          itemPrice += optionPrices;
+        }
+
+        subtotal += itemPrice * cartItem.quantity;
+      }
+    }
+
+    // Get tax and service fee rates
+    const taxRate = await this.cartService.getTaxRatePublic();
+    const serviceFeeRate = await this.cartService.getServiceFeeRatePublic();
+
+    const tax = Math.round(subtotal * taxRate);
+    const serviceFee = Math.round(subtotal * serviceFeeRate);
+
+    // Calculate discount if coupon is applied
+    let discount = 0;
+    let appliedCoupon;
+    if (sessionCart.couponCode) {
+      const couponResult =
+        await this.cartService.validateAndCalculateCouponDiscount(
+          sessionCart.couponCode,
+          subtotal
+        );
+      if (couponResult.valid && couponResult.discount !== undefined) {
+        discount = couponResult.discount;
+        appliedCoupon = {
+          id: "", // Will be filled when creating order
+          code: couponResult.code!,
+          type: couponResult.type!,
+          value: couponResult.value!,
+          discount: couponResult.discount,
+        };
+      }
+    }
+
+    const total = subtotal + tax + serviceFee - discount;
 
     return {
-      subtotal: cartSummary.subtotal,
-      tax: cartSummary.tax,
-      serviceFee: cartSummary.serviceFee,
-      discount: cartSummary.discount,
-      total: cartSummary.total,
-      appliedCoupon: cartSummary.appliedCoupon
-        ? {
-            id: "", // Will be filled when creating order
-            code: cartSummary.appliedCoupon.code,
-            type: cartSummary.appliedCoupon.type,
-            value: cartSummary.appliedCoupon.value,
-            discount: cartSummary.appliedCoupon.discount,
-          }
-        : undefined,
+      subtotal,
+      tax,
+      serviceFee,
+      discount,
+      total,
+      appliedCoupon,
     };
   }
 
@@ -82,8 +128,64 @@ export class OrderService {
    * Create order from database cart
    */
   async createOrderFromCart(
-    cartOrder: any,
-    cartSummary: any,
+    cartOrder: {
+      id: string;
+      items: {
+        quantity: number;
+        itemId: string;
+        notes?: string | null;
+        options?: {
+          option: {
+            price: number;
+            id: string;
+            name: string;
+            groupId: string;
+            group: {
+              id: string;
+              name: string;
+              required: boolean;
+              multiple: boolean;
+            };
+          };
+        }[];
+        item: {
+          id: string;
+          name: string;
+          description: string | null;
+          price: number;
+          image: string | null;
+          category: { id: string; name: string };
+          optionGroups: {
+            id: string;
+            name: string;
+            required: boolean;
+            multiple: boolean;
+            itemId: string;
+            options: {
+              id: string;
+              name: string;
+              price: number;
+              groupId: string;
+            }[];
+          }[];
+        };
+      }[];
+      notes?: string | null;
+    },
+    cartSummary: {
+      subtotal: number;
+      tax: number;
+      serviceFee: number;
+      discount: number;
+      total: number;
+      appliedCoupon?: {
+        id: string;
+        code: string;
+        type: "FIXED" | "PERCENTAGE";
+        value: number;
+        discount: number;
+      };
+    },
     checkoutData: CheckoutRequest,
     customerId?: string
   ): Promise<OrderCreationResult> {
@@ -127,7 +229,7 @@ export class OrderService {
             orderId: order.id,
             itemId: cartItem.itemId,
             quantity: cartItem.quantity,
-            price: cartItem.price, // Use the price stored when added to cart
+            price: cartItem.item.price, // Use the price from the item
             notes: cartItem.notes,
           },
         });
@@ -138,8 +240,8 @@ export class OrderService {
             await prisma.orderItemOption.create({
               data: {
                 orderItemId: orderItem.id,
-                optionId: cartOption.optionId,
-                price: cartOption.price, // Use the price stored when added to cart
+                optionId: cartOption.option.id,
+                price: cartOption.option.price, // Use the price from the option
               },
             });
           }
@@ -459,29 +561,60 @@ export class OrderService {
   }
 
   /**
-   * Get all orders (admin)
+   * Get all orders (admin) - excludes CART orders by default
    */
-  async getAllOrders(limit = 50, offset = 0, status?: string) {
-    const where = status ? { status } : {};
+  async getAllOrders(
+    limit = 50,
+    offset = 0,
+    status?: OrderStatus | "CART",
+    paymentMethod?: string,
+    paymentStatus?: string
+  ) {
+    const where: {
+      status?: OrderStatus | { not: OrderStatus };
+      paymentMethod?: PaymentMethod;
+      paymentStatus?: PaymentStatus;
+    } = { status: { not: "CART" as OrderStatus } };
 
-    return await prisma.order.findMany({
-      where,
-      include: {
-        customer: {
-          select: { id: true, name: true, email: true },
-        },
-        items: {
-          include: {
-            item: {
-              select: { id: true, name: true, price: true },
+    if (status) {
+      where.status = status;
+    }
+
+    if (paymentMethod) {
+      where.paymentMethod = paymentMethod as PaymentMethod;
+    }
+
+    if (paymentStatus) {
+      where.paymentStatus = paymentStatus as PaymentStatus;
+    }
+
+    const [orders, totalCount] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        include: {
+          customer: {
+            select: { id: true, name: true, email: true },
+          },
+          items: {
+            include: {
+              item: {
+                select: { id: true, name: true, price: true },
+              },
             },
           },
+          payments: true,
         },
-        payments: true,
-      },
-      orderBy: { createdAt: "desc" },
-      take: limit,
-      skip: offset,
-    });
+        orderBy: { createdAt: "desc" },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.order.count({ where }),
+    ]);
+
+    return {
+      orders,
+      totalCount,
+      hasMore: offset + limit < totalCount,
+    };
   }
 }

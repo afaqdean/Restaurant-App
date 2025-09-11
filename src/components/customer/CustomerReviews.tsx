@@ -1,108 +1,22 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
-
-interface Review {
-  id: string;
-  name: string;
-  rating: number;
-  comment: string;
-  date: string;
-  avatar?: string;
-}
-
-const sampleReviews: Review[] = [
-  {
-    id: '1',
-    name: 'Sarah Johnson',
-    rating: 5,
-    comment: 'The flavors are incredible and the presentation is simply beautiful. This is dining at its finest.',
-    date: '2024-01-15',
-    avatar: 'SJ'
-  },
-  {
-    id: '2',
-    name: 'Michael Chen',
-    rating: 5,
-    comment: 'Amazing food quality and exceptional service. The steak was cooked to perfection and the ambiance was wonderful.',
-    date: '2024-01-10',
-    avatar: 'MC'
-  },
-  {
-    id: '3',
-    name: 'Emily Rodriguez',
-    rating: 5,
-    comment: 'Best restaurant in town! Fresh ingredients, creative dishes, and friendly staff. Highly recommended!',
-    date: '2024-01-08',
-    avatar: 'ER'
-  },
-  {
-    id: '4',
-    name: 'David Thompson',
-    rating: 5,
-    comment: 'Outstanding culinary experience. Every dish tells a story of flavor and quality. Will definitely come back!',
-    date: '2024-01-05',
-    avatar: 'DT'
-  },
-  {
-    id: '5',
-    name: 'Lisa Wang',
-    rating: 5,
-    comment: 'The attention to detail in every aspect of the meal was remarkable. Truly exceptional dining experience.',
-    date: '2024-01-03',
-    avatar: 'LW'
-  }
-];
+import { NavigationButton } from '@/components/ui/buttons';
+import { StarRating } from '@/components/ui/StarRating';
+import { useCarousel } from '@/hooks/useCarousel';
+import { SAMPLE_REVIEWS } from '@/constants/customer';
 
 export default function CustomerReviews() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const {
+    currentIndex,
+    next: nextReview,
+    prev: prevReview,
+    goTo: goToReview,
+  } = useCarousel({
+    itemCount: SAMPLE_REVIEWS.length,
+    autoPlayInterval: 6000,
+  });
 
-  // Auto-advance carousel
-  useEffect(() => {
-    if (!isAutoPlaying) return;
-    
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => 
-        prevIndex === sampleReviews.length - 1 ? 0 : prevIndex + 1
-      );
-    }, 6000);
-
-    return () => clearInterval(interval);
-  }, [isAutoPlaying]);
-
-  const nextReview = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === sampleReviews.length - 1 ? 0 : prevIndex + 1
-    );
-    setIsAutoPlaying(false);
-  };
-
-  const prevReview = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? sampleReviews.length - 1 : prevIndex - 1
-    );
-    setIsAutoPlaying(false);
-  };
-
-  const goToReview = (index: number) => {
-    setCurrentIndex(index);
-    setIsAutoPlaying(false);
-  };
-
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`w-6 h-6 ${
-          i < rating ? 'text-yellow-400 fill-current' : 'text-slate-400'
-        }`}
-      />
-    ));
-  };
-
-  const currentReview = sampleReviews[currentIndex];
+  const currentReview = SAMPLE_REVIEWS[currentIndex];
 
   return (
     <section data-aos-id-2="">
@@ -121,39 +35,45 @@ export default function CustomerReviews() {
                   What Our Customers Say
                 </h2>
                 <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
-                  Don't just take our word for it - hear from our satisfied customers
+                  Don&apos;t just take our word for it - hear from our satisfied customers
                 </p>
               </div>
 
               {/* Review Carousel */}
               <div className="relative" data-aos="fade-up" data-aos-anchor="[data-aos-id-2]" data-aos-delay="200">
                 {/* Navigation Buttons */}
-                <button
+                <NavigationButton
+                  direction="prev"
+                  variant="carousel"
+                  size="lg"
                   onClick={prevReview}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 z-10 w-14 h-14 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-110 border border-white/20"
-                  aria-label="Previous review"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-6 z-10 w-12 h-12 sm:w-16 sm:h-16 bg-white/90 hover:bg-white text-slate-800 hover:text-slate-900 border-2 border-white/30 hover:border-white shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300"
+                  label="Previous review"
                 >
-                  <ChevronLeft className="w-7 h-7" />
-                </button>
+                  ←
+                </NavigationButton>
 
-                <button
+                <NavigationButton
+                  direction="next"
+                  variant="carousel"
+                  size="lg"
                   onClick={nextReview}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 z-10 w-14 h-14 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-110 border border-white/20"
-                  aria-label="Next review"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-6 z-10 w-12 h-12 sm:w-16 sm:h-16 bg-white/90 hover:bg-white text-slate-800 hover:text-slate-900 border-2 border-white/30 hover:border-white shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300"
+                  label="Next review"
                 >
-                  <ChevronRight className="w-7 h-7" />
-                </button>
+                  →
+                </NavigationButton>
 
                 {/* Review Card */}
-                <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-10 md:p-16 mx-12 border border-white/10 shadow-2xl">
+                <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-10 md:p-16 mx-8 sm:mx-12 border border-white/10 shadow-2xl">
                   {/* Stars */}
                   <div className="flex justify-center mb-8">
-                    {renderStars(currentReview.rating)}
+                    <StarRating rating={currentReview.rating} />
                   </div>
 
                   {/* Review Text */}
                   <blockquote className="text-2xl md:text-3xl text-white mb-12 leading-relaxed font-medium">
-                    "{currentReview.comment}"
+                    &quot;{currentReview.comment}&quot;
                   </blockquote>
 
                   {/* Customer Info */}
@@ -181,17 +101,18 @@ export default function CustomerReviews() {
 
                 {/* Dots Indicator */}
                 <div className="flex justify-center space-x-3 mt-12">
-                  {sampleReviews.map((_, index) => (
-                    <button
+                  {SAMPLE_REVIEWS.map((_, index) => (
+                    <NavigationButton
                       key={index}
+                      direction="next"
+                      variant="dots"
+                      size="md"
                       onClick={() => goToReview(index)}
-                      className={`w-4 h-4 rounded-full transition-all duration-300 ${
-                        index === currentIndex
-                          ? 'bg-emerald-400 scale-125 shadow-lg shadow-emerald-400/50'
-                          : 'bg-slate-500 hover:bg-slate-400'
-                      }`}
-                      aria-label={`Go to review ${index + 1}`}
-                    />
+                      isActive={index === currentIndex}
+                      label={`Go to review ${index + 1}`}
+                    >
+                      •
+                    </NavigationButton>
                   ))}
                 </div>
               </div>

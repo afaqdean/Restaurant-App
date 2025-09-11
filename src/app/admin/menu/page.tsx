@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Plus, Edit, Trash2, Eye, EyeOff } from "lucide-react";
+import { ImageWithFallback } from "@/components/ui";
+import { SkeletonAdminPage } from "@/components/ui/skeleton";
 import { 
   useCategories, 
   useItems, 
@@ -16,6 +18,7 @@ import {
 } from "@/hooks/useMenuManagement";
 import { CategoryForm } from "@/components/admin/CategoryForm";
 import { ItemForm } from "@/components/admin/ItemForm";
+import { LoadingState } from "@/components/ui/StandardStates";
 
 export default function AdminMenuPage() {
   const [activeTab, setActiveTab] = useState<"categories" | "items">("categories");
@@ -95,32 +98,46 @@ export default function AdminMenuPage() {
     });
   };
 
+  if (categoriesLoading || itemsLoading) {
+    return (
+      <SkeletonAdminPage
+        titleWidth={64}
+        subtitleWidth={80}
+        showActionButton={true}
+        actionButtonWidth={128}
+        tableColumns={6}
+        tableRows={8}
+        showPagination={true}
+      />
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Menu Management</h1>
-        <p className="text-gray-600 mt-2">Manage your restaurant's menu categories and items.</p>
+      <div className="mb-8" data-aos="fade-up">
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">Menu Management</h1>
+        <p className="text-lg text-gray-600">Manage your restaurant's menu categories and items.</p>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 mb-6">
-        <nav className="-mb-px flex space-x-8">
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8" data-aos="fade-up" data-aos-delay="100">
+        <nav className="flex space-x-8">
           <button
             onClick={() => setActiveTab("categories")}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+            className={`py-3 px-6 rounded-xl font-medium text-sm transition-all duration-200 ${
               activeTab === "categories"
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ? "bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm"
+                : "text-gray-500 hover:text-emerald-600 hover:bg-emerald-50"
             }`}
           >
             Categories ({categories.length})
           </button>
           <button
             onClick={() => setActiveTab("items")}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+            className={`py-3 px-6 rounded-xl font-medium text-sm transition-all duration-200 ${
               activeTab === "items"
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ? "bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm"
+                : "text-gray-500 hover:text-emerald-600 hover:bg-emerald-50"
             }`}
           >
             Items ({items.length})
@@ -130,15 +147,15 @@ export default function AdminMenuPage() {
 
       {/* Categories Tab */}
       {activeTab === "categories" && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-aos="fade-up" data-aos-delay="200">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-900">Categories</h2>
+            <h2 className="text-2xl font-semibold text-gray-900">Categories</h2>
             <button
               onClick={() => {
                 setEditingCategory(null);
                 setShowCategoryForm(true);
               }}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-emerald-600 to-teal-600 border border-transparent rounded-xl hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-lg hover:shadow-xl transition-all duration-200"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Category
@@ -159,15 +176,11 @@ export default function AdminMenuPage() {
           )}
 
           {categoriesLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 rounded-lg animate-pulse"></div>
-              ))}
-            </div>
+            <LoadingState message="Loading categories..." size="md" />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {categories.map((category) => (
-                <div key={category.id} className="bg-white rounded-lg shadow-sm border p-6">
+                <div key={category.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-gray-900">
@@ -185,38 +198,43 @@ export default function AdminMenuPage() {
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => toggleCategoryActive(category)}
-                        className={`p-1 rounded ${
+                        className={`p-2 rounded-lg transition-colors ${
                           category.active 
-                            ? "text-green-600 hover:text-green-700" 
-                            : "text-gray-400 hover:text-gray-600"
+                            ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" 
+                            : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"
                         }`}
                       >
                         {category.active ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                       </button>
                       <button
                         onClick={() => handleEditCategory(category)}
-                        className="p-1 text-blue-600 hover:text-blue-700"
+                        className="p-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteCategory(category)}
-                        className="p-1 text-red-600 hover:text-red-700"
+                        className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
                   
-                  {category.image && (
-                    <div className="mb-4">
-                      <img
-                        src={category.image}
-                        alt={category.name}
-                        className="w-full h-32 object-cover rounded-md"
-                      />
-                    </div>
-                  )}
+                  <div className="mb-4">
+                    <ImageWithFallback
+                      src={category.image || "/images/placeholder.png"}
+                      alt={category.name}
+                      width={400}
+                      height={128}
+                      className="w-full h-32 object-cover rounded-md"
+                      fallbackElement={
+                        <div className="w-full h-32 bg-gray-200 rounded-md flex items-center justify-center">
+                          <span className="text-sm text-gray-500">No Image</span>
+                        </div>
+                      }
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -226,15 +244,15 @@ export default function AdminMenuPage() {
 
       {/* Items Tab */}
       {activeTab === "items" && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-aos="fade-up" data-aos-delay="200">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-900">Items</h2>
+            <h2 className="text-2xl font-semibold text-gray-900">Items</h2>
             <button
               onClick={() => {
                 setEditingItem(null);
                 setShowItemForm(true);
               }}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-emerald-600 to-teal-600 border border-transparent rounded-xl hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-lg hover:shadow-xl transition-all duration-200"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Item
@@ -256,15 +274,11 @@ export default function AdminMenuPage() {
           )}
 
           {itemsLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-48 bg-gray-200 rounded-lg animate-pulse"></div>
-              ))}
-            </div>
+            <LoadingState message="Loading items..." size="md" />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {items.map((item) => (
-                <div key={item.id} className="bg-white rounded-lg shadow-sm border p-6">
+                <div key={item.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-gray-900">
@@ -275,7 +289,7 @@ export default function AdminMenuPage() {
                           {item.description}
                         </p>
                       )}
-                      <p className="text-sm font-medium text-blue-600 mt-2">
+                      <p className="text-lg font-bold text-emerald-600 mt-2">
                         {formatPrice(item.price)}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
@@ -285,42 +299,47 @@ export default function AdminMenuPage() {
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => toggleItemActive(item)}
-                        className={`p-1 rounded ${
+                        className={`p-2 rounded-lg transition-colors ${
                           item.active 
-                            ? "text-green-600 hover:text-green-700" 
-                            : "text-gray-400 hover:text-gray-600"
+                            ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" 
+                            : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"
                         }`}
                       >
                         {item.active ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                       </button>
                       <button
                         onClick={() => handleEditItem(item)}
-                        className="p-1 text-blue-600 hover:text-blue-700"
+                        className="p-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteItem(item)}
-                        className="p-1 text-red-600 hover:text-red-700"
+                        className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
                   
-                  {item.image && (
-                    <div className="mb-4">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-32 object-cover rounded-md"
-                      />
-                    </div>
-                  )}
+                  <div className="mb-4">
+                    <ImageWithFallback
+                      src={item.image || "/images/placeholder.png"}
+                      alt={item.name}
+                      width={400}
+                      height={128}
+                      className="w-full h-32 object-cover rounded-md"
+                      fallbackElement={
+                        <div className="w-full h-32 bg-gray-200 rounded-md flex items-center justify-center">
+                          <span className="text-sm text-gray-500">No Image</span>
+                        </div>
+                      }
+                    />
+                  </div>
 
                   {item.featured && (
-                    <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                      Featured
+                    <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-800 border border-orange-200">
+                      ⭐ Featured
                     </div>
                   )}
                 </div>

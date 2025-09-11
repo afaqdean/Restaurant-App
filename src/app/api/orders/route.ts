@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { OrderService } from "@/lib/services/order-service";
+import { OrderStatus } from "@/types/order";
 
 /**
  * @swagger
@@ -29,6 +30,18 @@ import { OrderService } from "@/lib/services/order-service";
  *           type: string
  *           enum: [PENDING, ACCEPTED, IN_KITCHEN, READY, COMPLETED, CANCELLED]
  *         description: Filter by order status
+ *       - in: query
+ *         name: paymentMethod
+ *         schema:
+ *           type: string
+ *           enum: [CARD, COD, CASH]
+ *         description: Filter by payment method
+ *       - in: query
+ *         name: paymentStatus
+ *         schema:
+ *           type: string
+ *           enum: [PAID, UNPAID]
+ *         description: Filter by payment status
  *     responses:
  *       200:
  *         description: Orders retrieved successfully
@@ -41,6 +54,12 @@ import { OrderService } from "@/lib/services/order-service";
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Order'
+ *                 totalCount:
+ *                   type: integer
+ *                   description: Total number of orders matching the filters
+ *                 hasMore:
+ *                   type: boolean
+ *                   description: Whether there are more orders available
  *       401:
  *         description: Unauthorized
  *       500:
@@ -56,22 +75,38 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get("limit") || "20");
     const offset = parseInt(searchParams.get("offset") || "0");
-    const status = searchParams.get("status") || undefined;
+    const statusParam = searchParams.get("status");
+    const paymentMethodParam = searchParams.get("paymentMethod");
+    const paymentStatusParam = searchParams.get("paymentStatus");
+    const status = statusParam as OrderStatus | "CART" | undefined;
+    const paymentMethod = paymentMethodParam || undefined;
+    const paymentStatus = paymentStatusParam || undefined;
 
     const orderService = new OrderService();
 
-    let orders;
+    let result;
     if (session.user.role === "ADMIN") {
-      orders = await orderService.getAllOrders(limit, offset, status);
+      result = await orderService.getAllOrders(
+        limit,
+        offset,
+        status,
+        paymentMethod,
+        paymentStatus
+      );
     } else {
-      orders = await orderService.getCustomerOrders(
+      const orders = await orderService.getCustomerOrders(
         session.user.id,
         limit,
         offset
       );
+      result = {
+        orders,
+        totalCount: orders.length,
+        hasMore: false,
+      };
     }
 
-    return NextResponse.json({ orders });
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Get orders error:", error);
     return NextResponse.json(

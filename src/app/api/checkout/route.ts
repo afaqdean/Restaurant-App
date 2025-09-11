@@ -57,8 +57,8 @@ import { cookies } from "next/headers";
  *       500:
  *         description: Internal server error
  */
-function getSessionId(): string {
-  const cookieStore = cookies();
+async function getSessionId(): Promise<string> {
+  const cookieStore = await cookies();
   let sessionId = cookieStore.get("cart_session")?.value;
   if (!sessionId) {
     sessionId = `sess_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     if (session?.user?.id) {
       cartOrder = await cartService.getCart(session.user.id);
     } else {
-      const sessionId = getSessionId();
+      const sessionId = await getSessionId();
       cartOrder = await cartService.getCart(undefined, sessionId);
     }
 
@@ -129,11 +129,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Clear the cart after successful order creation
-    if (session?.user?.id) {
-      await cartService.clearCart(session.user.id);
-    } else {
-      const sessionId = getSessionId();
-      await cartService.clearCart(undefined, sessionId);
+    // For COD orders, clear immediately. For card payments, let the payment page handle it
+    if (validatedData.paymentMethod === "COD") {
+      if (session?.user?.id) {
+        await cartService.clearCart(session.user.id, undefined);
+      } else {
+        const sessionId = await getSessionId();
+        await cartService.clearCart(undefined, sessionId);
+      }
     }
 
     const response = NextResponse.json({
@@ -145,7 +148,7 @@ export async function POST(request: NextRequest) {
 
     // Set session cookie for anonymous users
     if (!session?.user?.id) {
-      const sessionId = getSessionId();
+      const sessionId = await getSessionId();
       response.cookies.set("cart_session", sessionId, {
         path: "/",
         maxAge: 30 * 24 * 60 * 60,

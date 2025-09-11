@@ -75,7 +75,7 @@ export const menuResponseSchema = z.object({
 // API error validation
 export const apiErrorSchema = z.object({
   error: z.string(),
-  details: z.record(z.unknown()).optional(),
+  details: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type MenuQueryParams = z.infer<typeof menuQuerySchema>;
@@ -85,6 +85,3 @@ export type ItemOptionGroup = z.infer<typeof itemOptionGroupSchema>;
 export type ItemOption = z.infer<typeof itemOptionSchema>;
 export type MenuResponse = z.infer<typeof menuResponseSchema>;
 export type ApiError = z.infer<typeof apiErrorSchema>;
-
-
-

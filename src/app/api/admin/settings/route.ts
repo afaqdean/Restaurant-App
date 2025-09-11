@@ -5,58 +5,10 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
 const updateSettingsSchema = z.object({
-  settings: z.record(z.string(), z.any()),
+  settings: z.record(z.string(), z.unknown()),
 });
 
-/**
- * @swagger
- * /api/admin/settings:
- *   get:
- *     summary: Get all settings
- *     description: Retrieve all system settings (admin only)
- *     tags: [Admin, Settings]
- *     responses:
- *       200:
- *         description: Settings retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 settings:
- *                   type: object
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Admin access required
- *       500:
- *         description: Internal server error
- *   put:
- *     summary: Update settings
- *     description: Update system settings (admin only)
- *     tags: [Admin, Settings]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               settings:
- *                 type: object
- *     responses:
- *       200:
- *         description: Settings updated successfully
- *       400:
- *         description: Invalid request data
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Admin access required
- *       500:
- *         description: Internal server error
- */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id || session.user.role !== "ADMIN") {
@@ -66,25 +18,32 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const settings = await prisma.settings.findMany();
+    const settings = await prisma.settings.findMany({
+      orderBy: { key: "asc" },
+    });
 
     // Convert settings array to object
     const settingsObject = settings.reduce((acc, setting) => {
-      let value = setting.value;
+      let value: unknown = setting.value;
 
       // Parse value based on type
       switch (setting.type) {
         case "NUMBER":
-          value = parseFloat(value);
+          const numValue = parseFloat(String(value));
+          value = isNaN(numValue) ? 0 : numValue;
           break;
         case "BOOLEAN":
-          value = value === "true";
+          value = String(value) === "true";
           break;
         case "JSON":
           try {
-            value = JSON.parse(value);
-          } catch {
-            value = value;
+            value = JSON.parse(String(value));
+          } catch (parseError) {
+            console.warn(
+              `Failed to parse JSON for setting ${setting.key}:`,
+              parseError
+            );
+            value = value; // Keep as string if parsing fails
           }
           break;
         default:
@@ -93,7 +52,7 @@ export async function GET(request: NextRequest) {
 
       acc[setting.key] = value;
       return acc;
-    }, {} as Record<string, any>);
+    }, {} as Record<string, unknown>);
 
     return NextResponse.json({ settings: settingsObject });
   } catch (error) {
@@ -118,13 +77,29 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const validatedData = updateSettingsSchema.parse(body);
 
+    // Validate that settings object is not empty
+    if (
+      !validatedData.settings ||
+      Object.keys(validatedData.settings).length === 0
+    ) {
+      return NextResponse.json(
+        { error: "Settings object cannot be empty" },
+        { status: 400 }
+      );
+    }
+
     // Update settings in transaction
     const result = await prisma.$transaction(async (tx) => {
       const updates = [];
 
       for (const [key, value] of Object.entries(validatedData.settings)) {
-        let stringValue = value;
-        let type = "STRING";
+        // Validate key is not empty
+        if (!key || key.trim().length === 0) {
+          throw new Error("Setting key cannot be empty");
+        }
+
+        let stringValue: string;
+        let type: "STRING" | "NUMBER" | "BOOLEAN" | "JSON";
 
         // Determine type and convert to string
         if (typeof value === "number") {
@@ -133,16 +108,28 @@ export async function PUT(request: NextRequest) {
         } else if (typeof value === "boolean") {
           stringValue = value.toString();
           type = "BOOLEAN";
-        } else if (typeof value === "object") {
-          stringValue = JSON.stringify(value);
-          type = "JSON";
+        } else if (typeof value === "object" && value !== null) {
+          try {
+            stringValue = JSON.stringify(value);
+            type = "JSON";
+          } catch (jsonError) {
+            console.warn(
+              `Failed to stringify JSON for setting ${key}:`,
+              jsonError
+            );
+            stringValue = String(value);
+            type = "STRING";
+          }
+        } else {
+          stringValue = String(value);
+          type = "STRING";
         }
 
         updates.push(
           tx.settings.upsert({
-            where: { key },
-            update: { value: stringValue, type: type as any },
-            create: { key, value: stringValue, type: type as any },
+            where: { key: key.trim() },
+            update: { value: stringValue, type },
+            create: { key: key.trim(), value: stringValue, type },
           })
         );
       }
@@ -154,11 +141,18 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error("Update settings error:", error);
 
-    if (error instanceof Error && error.name === "ZodError") {
+    if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Invalid request data" },
+        { error: "Invalid request data", details: error.format() },
         { status: 400 }
       );
+    }
+
+    if (error instanceof Error) {
+      // Handle specific database or validation errors
+      if (error.message.includes("Setting key cannot be empty")) {
+        return NextResponse.json({ error: error.message }, { status: 400 });
+      }
     }
 
     return NextResponse.json(

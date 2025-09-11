@@ -33,12 +33,13 @@ import { formatMenuItem } from "@/lib/utils/menu";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const item = await prisma.item.findUnique({
       where: {
-        id: params.id,
+        id: id,
         active: true,
       },
       include: {
@@ -69,6 +70,3 @@ export async function GET(
     );
   }
 }
-
-
-

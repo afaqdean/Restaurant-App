@@ -44,6 +44,7 @@ export interface CartSummary {
   total: number;
   itemCount: number;
   appliedCoupon?: {
+    id: string;
     code: string;
     type: "FIXED" | "PERCENTAGE";
     value: number;

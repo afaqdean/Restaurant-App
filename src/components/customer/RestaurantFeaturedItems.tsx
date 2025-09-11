@@ -1,61 +1,42 @@
 "use client";
 
-import { MenuItem } from "@/types/menu";
-import Image from "next/image";
 import Link from "next/link";
-import { Star, ArrowRight, ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useAddToCart } from "@/hooks/useCart";
+import { Star, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { useCart } from "@/contexts/CartContext";
 import { useRouter } from "next/navigation";
-
-interface RestaurantFeaturedItemsProps {
-  featuredItems: MenuItem[];
-}
+import { PrimaryButton, NavigationButton, CartActionButton } from "@/components/ui/buttons";
+import { ImageWithFallback } from "@/components/ui";
+import { useCarousel } from "@/hooks/useCarousel";
+import { RestaurantFeaturedItemsProps } from "@/types/customer-components";
+import { MenuItem } from "@/types/menu";
 
 export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFeaturedItemsProps) {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [addingToCart, setAddingToCart] = useState<string | null>(null);
-  const addToCartMutation = useAddToCart();
+  const { addToCart } = useCart();
   const router = useRouter();
 
-  // Auto-slide functionality - move one card at a time
-  useEffect(() => {
-    if (!isAutoPlaying || featuredItems.length <= 3 || addingToCart) return;
-
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % (featuredItems.length - 2));
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, featuredItems.length, addingToCart]);
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % (featuredItems.length - 2));
-    setIsAutoPlaying(false);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + (featuredItems.length - 2)) % (featuredItems.length - 2));
-    setIsAutoPlaying(false);
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-    setIsAutoPlaying(false);
-  };
+  const {
+    currentIndex: currentSlide,
+    next: nextSlide,
+    prev: prevSlide,
+    goTo: goToSlide,
+    pause,
+  } = useCarousel({
+    itemCount: featuredItems.length,
+    autoPlayInterval: 3000,
+    maxVisibleItems: 3,
+    isPaused: !!addingToCart,
+  });
 
   const handleAddToCart = async (item: MenuItem) => {
     try {
       setAddingToCart(item.id);
       // Pause auto-playing when adding to cart
-      setIsAutoPlaying(false);
+      pause();
       
       // Wait for API response before redirecting
-      await addToCartMutation.mutateAsync({
-        itemId: item.id,
-        quantity: 1,
-      });
+      await addToCart(item.id, 1);
       
       // Only redirect after successful API response
       router.push('/cart');
@@ -66,7 +47,7 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
       setAddingToCart(null);
       // Resume auto-playing after a short delay
       setTimeout(() => {
-        setIsAutoPlaying(true);
+        // Auto-playing will resume automatically when addingToCart becomes null
       }, 2000);
     }
   };
@@ -94,35 +75,30 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
                 className="flex transition-transform duration-500 ease-in-out"
                 style={{ transform: `translateX(-${currentSlide * (100 / 3)}%)` }}
               >
-                {featuredItems.map((item, index) => (
+                {featuredItems.map((item) => (
                   <div key={item.id} className="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 px-2 sm:px-4">
                     <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group h-full flex flex-col border border-gray-100">
-                      {item.image ? (
-                        <div className="relative h-48 sm:h-52 lg:h-56 overflow-hidden">
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-300"
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          />
-                          <div className="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1">
-                            <Star className="h-3 w-3 sm:h-4 sm:w-4" />
-                            Featured
-                          </div>
+                      <div className="relative h-48 sm:h-52 lg:h-56 overflow-hidden">
+                        <ImageWithFallback
+                          src={item.image || "/images/placeholder.png"}
+                          alt={item.name}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-300"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          fallbackElement={
+                            <div className="h-full bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center">
+                              <div className="text-center text-emerald-600">
+                                <div className="text-4xl sm:text-5xl mb-2">🍽️</div>
+                                <p className="text-sm font-medium">No Image</p>
+                              </div>
+                            </div>
+                          }
+                        />
+                        <div className="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1">
+                          <Star className="h-3 w-3 sm:h-4 sm:w-4" />
+                          Featured
                         </div>
-                      ) : (
-                        <div className="relative h-48 sm:h-52 lg:h-56 bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center">
-                          <div className="text-center text-emerald-600">
-                            <div className="text-4xl sm:text-5xl mb-2">🍽️</div>
-                            <p className="text-sm font-medium">No Image</p>
-                          </div>
-                          <div className="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1">
-                            <Star className="h-3 w-3 sm:h-4 sm:w-4" />
-                            Featured
-                          </div>
-                        </div>
-                      )}
+                      </div>
                       
                       <div className="p-4 sm:p-6 flex-1 flex flex-col">
                         <div className="flex justify-between items-start mb-3">
@@ -144,23 +120,17 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
                           <span className="text-xs sm:text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
                             {item.category.name}
                           </span>
-                          <button
+                          <CartActionButton
                             onClick={() => handleAddToCart(item)}
                             disabled={addingToCart === item.id}
-                            className="text-emerald-600 hover:text-emerald-700 font-semibold flex items-center gap-1 group-hover:gap-2 transition-all text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                            action="add"
+                            variant="icon-text"
+                            size="md"
+                            isLoading={addingToCart === item.id}
+                            loadingText="Adding..."
                           >
-                            {addingToCart === item.id ? (
-                              <>
-                                <div className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-                                Adding...
-                              </>
-                            ) : (
-                              <>
-                                <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
-                                Order Now
-                              </>
-                            )}
-                          </button>
+                            Order Now
+                          </CartActionButton>
                         </div>
                       </div>
                     </div>
@@ -172,20 +142,22 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
             {/* Navigation Arrows */}
             {featuredItems.length > 3 && (
               <>
-                <button
+                <NavigationButton
+                  direction="prev"
+                  variant="carousel"
                   onClick={prevSlide}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-900 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-10"
-                  aria-label="Previous slide"
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10"
                 >
-                  <ChevronLeft className="h-6 w-6" />
-                </button>
-                <button
+                  ←
+                </NavigationButton>
+                <NavigationButton
+                  direction="next"
+                  variant="carousel"
                   onClick={nextSlide}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-900 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-10"
-                  aria-label="Next slide"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10"
                 >
-                  <ChevronRight className="h-6 w-6" />
-                </button>
+                  →
+                </NavigationButton>
               </>
             )}
 
@@ -193,16 +165,17 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
             {featuredItems.length > 3 && (
               <div className="flex justify-center mt-8 space-x-2">
                 {Array.from({ length: featuredItems.length - 2 }).map((_, index) => (
-                  <button
+                  <NavigationButton
                     key={index}
+                    direction="next"
+                    variant="dots"
+                    size="sm"
                     onClick={() => goToSlide(index)}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                      index === currentSlide
-                        ? 'bg-emerald-500 scale-125'
-                        : 'bg-gray-300 hover:bg-gray-400'
-                    }`}
-                    aria-label={`Go to slide ${index + 1}`}
-                  />
+                    isActive={index === currentSlide}
+                    label={`Go to slide ${index + 1}`}
+                  >
+                    •
+                  </NavigationButton>
                 ))}
               </div>
             )}
@@ -222,14 +195,14 @@ export default function RestaurantFeaturedItems({ featuredItems }: RestaurantFea
         )}
 
         <div className="text-center mt-12" data-aos="fade-up" data-aos-delay="400">
-          <Link
-            href="/menu"
-            className="btn-sm inline-flex items-center text-white bg-gradient-to-tr from-emerald-500 hover:bg-emerald-600 group shadow-xs"
-          >
-            View Full Menu
-            <span className="tracking-normal text-emerald-100 group-hover:translate-x-0.5 transition-transform duration-150 ease-in-out ml-2">
-              <ArrowRight className="h-4 w-4" />
-            </span>
+          <Link href="/menu">
+            <PrimaryButton
+              size="sm"
+              icon={<ArrowRight className="h-4 w-4" />}
+              className="shadow-xs"
+            >
+              View Full Menu
+            </PrimaryButton>
           </Link>
         </div>
       </div>

@@ -51,6 +51,24 @@ const updateExpenseSchema = z.object({
  *         schema:
  *           type: boolean
  *         description: Filter by paid status
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Start date for filtering (YYYY-MM-DD)
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: End date for filtering (YYYY-MM-DD)
+ *       - in: query
+ *         name: format
+ *         schema:
+ *           type: string
+ *           enum: [json, csv]
+ *         description: Response format
  *     responses:
  *       200:
  *         description: Expenses retrieved successfully
@@ -118,16 +136,64 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
     const paid = searchParams.get("paid");
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+    const format = searchParams.get("format") || "json";
+
+    // Build date filter
+    const dateFilter: any = {};
+    if (startDate || endDate) {
+      dateFilter.createdAt = {};
+      if (startDate) {
+        dateFilter.createdAt.gte = new Date(startDate);
+      }
+      if (endDate) {
+        // Add one day to endDate to include the entire end date
+        const endDateObj = new Date(endDate);
+        endDateObj.setDate(endDateObj.getDate() + 1);
+        dateFilter.createdAt.lte = endDateObj;
+      }
+    }
 
     const expenses = await prisma.expense.findMany({
       where: {
         ...(category && { category: category as any }),
         ...(paid !== null && { paid: paid === "true" }),
+        ...dateFilter,
       },
       orderBy: {
         createdAt: "desc",
       },
     });
+
+    if (format === "csv") {
+      // Generate CSV
+      const csvHeaders =
+        "Date,Description,Category,Vendor,Amount,Status,Notes\n";
+      const csvRows = expenses
+        .map((expense) => {
+          const date = new Date(expense.createdAt).toISOString().split("T")[0];
+          const amount = (expense.amount / 100).toFixed(2);
+          const status = expense.paid ? "Paid" : "Unpaid";
+          const description = expense.description.replace(/"/g, '""'); // Escape quotes
+          const vendor = (expense.vendor || "").replace(/"/g, '""'); // Escape quotes
+          const notes = (expense.notes || "").replace(/"/g, '""'); // Escape quotes
+
+          return `"${date}","${description}","${expense.category}","${vendor}","${amount}","${status}","${notes}"`;
+        })
+        .join("\n");
+
+      const csv = csvHeaders + csvRows;
+
+      return new NextResponse(csv, {
+        headers: {
+          "Content-Type": "text/csv",
+          "Content-Disposition": `attachment; filename="expenses-${
+            new Date().toISOString().split("T")[0]
+          }.csv"`,
+        },
+      });
+    }
 
     return NextResponse.json({ expenses });
   } catch (error) {

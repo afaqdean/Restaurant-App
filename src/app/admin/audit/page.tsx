@@ -63,8 +63,16 @@ export default function AdminAuditPage() {
   const parseValue = (value?: string) => {
     if (!value) return null;
     try {
-      return JSON.parse(value);
+      // Try to parse as JSON first
+      const parsed = JSON.parse(value);
+      // If it's a string that was JSON-encoded, return the string
+      if (typeof parsed === 'string') {
+        return parsed;
+      }
+      // If it's an object, return it
+      return parsed;
     } catch {
+      // If JSON parsing fails, return the original string
       return value;
     }
   };
@@ -101,13 +109,13 @@ export default function AdminAuditPage() {
 
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Audit Logs</h1>
-        <p className="text-gray-600 mt-2">Track all system activities and changes.</p>
+      <div className="mb-8" data-aos="fade-up">
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">Audit Logs</h1>
+        <p className="text-lg text-gray-600">Track all system activities and changes.</p>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6" data-aos="fade-up" data-aos-delay="100">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div className="flex items-center space-x-4">
             <Filter className="w-5 h-5 text-gray-400" />
@@ -119,7 +127,7 @@ export default function AdminAuditPage() {
                 type="text"
                 value={filters.orderId || ""}
                 onChange={(e) => setFilters({ ...filters, orderId: e.target.value || undefined })}
-                className="px-3 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-4 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                 placeholder="Filter by order ID"
               />
             </div>
@@ -129,7 +137,7 @@ export default function AdminAuditPage() {
               <select
                 value={limit}
                 onChange={(e) => setLimit(parseInt(e.target.value))}
-                className="px-3 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-4 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
               >
                 <option value={25}>25</option>
                 <option value={50}>50</option>
@@ -155,7 +163,7 @@ export default function AdminAuditPage() {
       </div>
 
       {/* Audit Logs */}
-      <div className="bg-white rounded-lg shadow-sm border">
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100" data-aos="fade-up" data-aos-delay="200">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">Activity Log</h2>
         </div>
@@ -180,10 +188,10 @@ export default function AdminAuditPage() {
                           {getActionLabel(log.action)}
                         </span>
                         
-                        {log.orderId && (
+                        {log.orderNumber && (
                           <div className="flex items-center space-x-1 text-sm text-gray-600">
                             <Package className="w-4 h-4" />
-                            <span>Order #{log.orderId}</span>
+                            <span>Order #{log.orderNumber}</span>
                           </div>
                         )}
                       </div>
@@ -191,12 +199,12 @@ export default function AdminAuditPage() {
                       <div className="text-sm text-gray-900 mb-2">
                         {log.action === "ORDER_STATUS_CHANGED" && (
                           <span>
-                            Order status changed from <strong>{oldValue?.status}</strong> to <strong>{newValue?.status}</strong>
+                            Order status changed from <strong>{typeof oldValue === 'object' ? oldValue?.status : oldValue}</strong> to <strong>{typeof newValue === 'object' ? newValue?.status : newValue}</strong>
                           </span>
                         )}
                         {log.action === "PAYMENT_STATUS_CHANGED" && (
                           <span>
-                            Payment status changed from <strong>{oldValue?.paymentStatus}</strong> to <strong>{newValue?.paymentStatus}</strong>
+                            Payment status changed from <strong>{typeof oldValue === 'object' ? oldValue?.paymentStatus : oldValue}</strong> to <strong>{typeof newValue === 'object' ? newValue?.paymentStatus : newValue}</strong>
                           </span>
                         )}
                         {log.action === "COD_PAYMENT_CONFIRMED" && (
@@ -262,10 +270,10 @@ export default function AdminAuditPage() {
                           <span>{formatDate(log.createdAt)}</span>
                         </div>
                         
-                        {log.userId && (
+                        {log.userEmail && (
                           <div className="flex items-center space-x-1">
                             <User className="w-3 h-3" />
-                            <span>User: {log.userId}</span>
+                            <span>User: {log.userEmail}</span>
                           </div>
                         )}
                       </div>

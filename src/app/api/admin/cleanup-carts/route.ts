@@ -8,7 +8,7 @@ import { CartService } from "@/lib/services/cart-service";
  * /api/admin/cleanup-carts:
  *   post:
  *     summary: Clean up abandoned carts
- *     description: Removes old abandoned carts to prevent database bloat
+ *     description: Removes cart orders older than 1 day to prevent database bloat
  *     tags: [Admin]
  *     responses:
  *       200:

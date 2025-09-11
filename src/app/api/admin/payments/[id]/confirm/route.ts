@@ -40,7 +40,7 @@ import { PaymentService } from "@/lib/services/payment-service";
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -56,11 +56,9 @@ export async function POST(
       );
     }
 
+    const { id } = await params;
     const paymentService = new PaymentService();
-    const result = await paymentService.confirmCodPayment(
-      params.id,
-      session.user.id
-    );
+    const result = await paymentService.confirmCodPayment(id, session.user.id);
 
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 400 });

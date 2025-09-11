@@ -4,7 +4,7 @@ import "./globals.css";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { CartProvider } from "@/contexts/CartContext";
-import AOSInit from "@/components/AOSInit";
+import AOSInit from "@/components/ui/AOSInit";
 
 const aspekta = localFont({
   src: [
@@ -51,7 +51,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${aspekta.variable} font-aspekta antialiased bg-white text-gray-800 font-[350]`}>
         <AOSInit />
-        <div className="flex flex-col min-h-screen overflow-hidden">
+        <div className="flex flex-col min-h-screen">
           <SessionProvider>
             <QueryProvider>
               <CartProvider>

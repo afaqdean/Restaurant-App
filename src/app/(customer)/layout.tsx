@@ -23,14 +23,14 @@ export default function CustomerLayout({
   })
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Navigation />
       
-      <main className="grow">
+      <main className="flex-1">
         {children}
       </main>
 
       <RestaurantFooter />
-    </>
+    </div>
   )
 }

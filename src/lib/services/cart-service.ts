@@ -496,15 +496,15 @@ export class CartService {
    * Clean up old abandoned cart orders
    */
   async cleanupAbandonedCarts() {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
 
-    // Delete cart orders older than 7 days
+    // Delete cart orders older than 1 day
     const deletedCarts = await prisma.order.deleteMany({
       where: {
         status: "CART",
         createdAt: {
-          lt: sevenDaysAgo,
+          lt: oneDayAgo,
         },
       },
     });
@@ -517,62 +517,20 @@ export class CartService {
   }
 
   /**
-   * Clean up old abandoned carts
-   */
-  async cleanupAbandonedCarts() {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-    // Delete anonymous carts older than 30 days
-    const deletedAnonymousCarts = await prisma.cart.deleteMany({
-      where: {
-        userId: null, // Anonymous carts
-        updatedAt: {
-          lt: thirtyDaysAgo,
-        },
-      },
-    });
-
-    // Delete authenticated user carts older than 90 days (more lenient for logged users)
-    const ninetyDaysAgo = new Date();
-    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
-
-    const deletedUserCarts = await prisma.cart.deleteMany({
-      where: {
-        userId: { not: null }, // Authenticated user carts
-        updatedAt: {
-          lt: ninetyDaysAgo,
-        },
-      },
-    });
-
-    console.log(
-      `Cleaned up ${deletedAnonymousCarts.count} anonymous carts and ${deletedUserCarts.count} user carts`
-    );
-
-    return {
-      anonymousCartsDeleted: deletedAnonymousCarts.count,
-      userCartsDeleted: deletedUserCarts.count,
-    };
-  }
-
-  /**
    * Merge anonymous cart with user cart when user logs in
    */
   async mergeAnonymousCartWithUserCart(userId: string, sessionId: string) {
-    const userCart = await this.getOrCreateCart(userId, undefined);
-    const anonymousCart = await this.getOrCreateCart(undefined, sessionId);
+    const userCart = await this.getOrCreateCartOrder(userId, undefined);
+    const anonymousCart = await this.getOrCreateCartOrder(undefined, sessionId);
 
     // If anonymous cart has items, merge them
     if (anonymousCart.items.length > 0) {
       for (const anonymousItem of anonymousCart.items) {
         // Check if user cart already has this item with same options
-        const existingUserItem = await prisma.cartItem.findUnique({
+        const existingUserItem = await prisma.orderItem.findFirst({
           where: {
-            cartId_itemId: {
-              cartId: userCart.id,
-              itemId: anonymousItem.itemId,
-            },
+            orderId: userCart.id,
+            itemId: anonymousItem.itemId,
           },
           include: {
             options: true,
@@ -597,17 +555,18 @@ export class CartService {
               existingUserItem.quantity + anonymousItem.quantity,
               10
             );
-            await prisma.cartItem.update({
+            await prisma.orderItem.update({
               where: { id: existingUserItem.id },
               data: { quantity: newQuantity },
             });
           } else {
             // Different options - copy anonymous item to user cart
-            await this.createCartItem(
-              userCart.id,
+            await this.addToCart(
+              userId,
+              undefined,
               anonymousItem.itemId,
               anonymousItem.quantity,
-              anonymousItem.notes,
+              anonymousItem.notes || undefined,
               anonymousItem.options.map((opt) => ({
                 optionId: opt.optionId,
                 groupId: opt.option.groupId,
@@ -616,11 +575,12 @@ export class CartService {
           }
         } else {
           // Copy anonymous item to user cart
-          await this.createCartItem(
-            userCart.id,
+          await this.addToCart(
+            userId,
+            undefined,
             anonymousItem.itemId,
             anonymousItem.quantity,
-            anonymousItem.notes,
+            anonymousItem.notes || undefined,
             anonymousItem.options.map((opt) => ({
               optionId: opt.optionId,
               groupId: opt.option.groupId,
@@ -630,16 +590,16 @@ export class CartService {
       }
 
       // Apply anonymous cart's coupon if user cart doesn't have one
-      if (anonymousCart.couponCode && !userCart.couponCode) {
-        await prisma.cart.update({
+      if (anonymousCart.notes && !userCart.notes) {
+        await prisma.order.update({
           where: { id: userCart.id },
-          data: { couponCode: anonymousCart.couponCode },
+          data: { notes: anonymousCart.notes },
         });
       }
 
-      // Delete anonymous cart
-      await prisma.cart.delete({
-        where: { id: anonymousCart.id },
+      // Clear anonymous cart items
+      await prisma.orderItem.deleteMany({
+        where: { orderId: anonymousCart.id },
       });
     }
 
@@ -744,7 +704,7 @@ export class CartService {
       groupSelections.get(groupId)!.push(selectedOption.optionId);
     }
 
-    for (const [groupId, optionIds] of groupSelections) {
+    for (const [groupId, optionIds] of Array.from(groupSelections.entries())) {
       const group = item.optionGroups.find((g) => g.id === groupId);
       if (group && !group.multiple && optionIds.length > 1) {
         throw new Error(
@@ -830,6 +790,7 @@ export class CartService {
           name: group.name,
           required: group.required,
           multiple: group.multiple,
+          itemId: group.itemId,
           options: group.options.map((option) => ({
             id: option.id,
             name: option.name,
@@ -848,7 +809,49 @@ export class CartService {
   /**
    * Calculate cart summary from cart order
    */
-  async calculateCartSummary(cartOrder: any): Promise<CartSummary> {
+  async calculateCartSummary(cartOrder: {
+    items: {
+      quantity: number;
+      itemId: string;
+      notes?: string | null;
+      options?: {
+        option: {
+          price: number;
+          id: string;
+          name: string;
+          groupId: string;
+          group: {
+            id: string;
+            name: string;
+            required: boolean;
+            multiple: boolean;
+          };
+        };
+      }[];
+      item: {
+        id: string;
+        name: string;
+        description: string | null;
+        price: number;
+        image: string | null;
+        category: { id: string; name: string };
+        optionGroups: {
+          id: string;
+          name: string;
+          required: boolean;
+          multiple: boolean;
+          itemId: string;
+          options: {
+            id: string;
+            name: string;
+            price: number;
+            groupId: string;
+          }[];
+        }[];
+      };
+    }[];
+    notes?: string | null;
+  }): Promise<CartSummary> {
     const items: CartItemWithDetails[] = [];
     let subtotal = 0;
 
@@ -877,12 +880,13 @@ export class CartService {
         couponCode,
         subtotal
       );
-      if (couponResult.valid) {
+      if (couponResult.valid && couponResult.discount !== undefined) {
         discount = couponResult.discount;
         appliedCoupon = {
-          code: couponResult.code,
-          type: couponResult.type,
-          value: couponResult.value,
+          id: couponResult.id!,
+          code: couponResult.code!,
+          type: couponResult.type!,
+          value: couponResult.value!,
           discount: couponResult.discount,
         };
       }
@@ -890,7 +894,7 @@ export class CartService {
 
     const total = subtotal + tax + serviceFee - discount;
     const itemCount = cartOrder.items.reduce(
-      (sum: number, item: any) => sum + item.quantity,
+      (sum: number, item: { quantity: number }) => sum + item.quantity,
       0
     );
 
@@ -909,16 +913,59 @@ export class CartService {
   /**
    * Get cart item with full details from database cart item
    */
-  private async getCartItemWithDetailsFromDB(
-    cartItem: any
-  ): Promise<CartItemWithDetails> {
+  private async getCartItemWithDetailsFromDB(cartItem: {
+    itemId: string;
+    quantity: number;
+    notes?: string | null;
+    options?: {
+      option: {
+        price: number;
+        id: string;
+        name: string;
+        groupId: string;
+        group: {
+          id: string;
+          name: string;
+          required: boolean;
+          multiple: boolean;
+        };
+      };
+    }[];
+    item: {
+      id: string;
+      name: string;
+      description: string | null;
+      price: number;
+      image: string | null;
+      category: { id: string; name: string };
+      optionGroups: {
+        id: string;
+        name: string;
+        required: boolean;
+        multiple: boolean;
+        itemId: string;
+        options: { id: string; name: string; price: number; groupId: string }[];
+      }[];
+    };
+  }): Promise<CartItemWithDetails> {
     const item = cartItem.item;
 
     // Get selected options with details
     const selectedOptionsWithDetails = [];
     if (cartItem.options && cartItem.options.length > 0) {
       for (const cartOption of cartItem.options) {
-        const option = cartOption.option;
+        const option = cartOption.option as {
+          price: number;
+          id: string;
+          name: string;
+          groupId: string;
+          group: {
+            id: string;
+            name: string;
+            required: boolean;
+            multiple: boolean;
+          };
+        };
         selectedOptionsWithDetails.push({
           optionId: option.id,
           groupId: option.groupId,
@@ -938,10 +985,11 @@ export class CartService {
     }
 
     // Calculate price
-    let calculatedPrice = item.price;
+    let calculatedPrice = item.price || 0;
     if (cartItem.options && cartItem.options.length > 0) {
       const optionPrices = cartItem.options.reduce(
-        (sum: number, cartOption: any) => sum + cartOption.option.price,
+        (sum: number, cartOption: { option: { price: number } }) =>
+          sum + cartOption.option.price,
         0
       );
       calculatedPrice += optionPrices;
@@ -952,12 +1000,8 @@ export class CartService {
     return {
       itemId: cartItem.itemId,
       quantity: cartItem.quantity,
-      notes: cartItem.notes,
-      selectedOptions:
-        cartItem.options?.map((opt: any) => ({
-          optionId: opt.option.id,
-          groupId: opt.option.groupId,
-        })) || [],
+      notes: cartItem.notes || undefined,
+      selectedOptions: selectedOptionsWithDetails,
       item: {
         id: item.id,
         name: item.name,
@@ -968,21 +1012,42 @@ export class CartService {
           id: item.category.id,
           name: item.category.name,
         },
-        optionGroups: item.optionGroups.map((group: any) => ({
-          id: group.id,
-          name: group.name,
-          required: group.required,
-          multiple: group.multiple,
-          options: group.options.map((option: any) => ({
-            id: option.id,
-            name: option.name,
-            price: option.price,
-            formattedPrice: `$${(option.price / 100).toFixed(2)}`,
-            groupId: option.groupId,
-          })),
-        })),
+        optionGroups: item.optionGroups.map(
+          (group: {
+            id: string;
+            name: string;
+            required: boolean;
+            multiple: boolean;
+            itemId: string;
+            options: {
+              id: string;
+              name: string;
+              price: number;
+              groupId: string;
+            }[];
+          }) => ({
+            id: group.id,
+            name: group.name,
+            required: group.required,
+            multiple: group.multiple,
+            itemId: group.itemId,
+            options: group.options.map(
+              (option: {
+                id: string;
+                name: string;
+                price: number;
+                groupId: string;
+              }) => ({
+                id: option.id,
+                name: option.name,
+                price: option.price,
+                formattedPrice: `$${(option.price / 100).toFixed(2)}`,
+                groupId: option.groupId,
+              })
+            ),
+          })
+        ),
       },
-      selectedOptions: selectedOptionsWithDetails,
       calculatedPrice,
       totalPrice,
     };
@@ -1009,6 +1074,20 @@ export class CartService {
   }
 
   /**
+   * Public getter for tax rate
+   */
+  async getTaxRatePublic(): Promise<number> {
+    return this.getTaxRate();
+  }
+
+  /**
+   * Public getter for service fee rate
+   */
+  async getServiceFeeRatePublic(): Promise<number> {
+    return this.getServiceFeeRate();
+  }
+
+  /**
    * Validate and calculate coupon discount
    */
   async validateAndCalculateCouponDiscount(
@@ -1016,6 +1095,7 @@ export class CartService {
     subtotal: number
   ): Promise<{
     valid: boolean;
+    id?: string;
     code?: string;
     type?: "FIXED" | "PERCENTAGE";
     value?: number;
@@ -1061,12 +1141,13 @@ export class CartService {
 
       return {
         valid: true,
+        id: coupon.id,
         code: coupon.code,
         type: coupon.type,
         value: coupon.value,
         discount,
       };
-    } catch (error) {
+    } catch {
       return { valid: false, error: "Failed to validate coupon" };
     }
   }
@@ -1077,7 +1158,7 @@ export class CartService {
   async validateCartItem(
     itemId: string,
     quantity: number,
-    selectedOptions: CartItem["selectedOptions"]
+    selectedOptions?: CartItem["selectedOptions"]
   ): Promise<void> {
     // Check if item exists and is active
     const item = await prisma.item.findUnique({
@@ -1094,6 +1175,8 @@ export class CartService {
     }
 
     // Validate options
-    await this.validateCartItemOptions(itemId, selectedOptions);
+    if (selectedOptions) {
+      await this.validateCartItemOptions(itemId, selectedOptions);
+    }
   }
 }

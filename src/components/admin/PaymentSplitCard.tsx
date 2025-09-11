@@ -27,15 +27,15 @@ export function PaymentSplitCard({
   const codRevenuePercentage = totalRevenue > 0 ? (codRevenue / totalRevenue) * 100 : 0;
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border p-6 ${className}`}>
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Method Split</h3>
+    <div className={`bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 ${className}`}>
+      <h3 className="text-xl font-semibold text-gray-900 mb-6">Payment Method Split</h3>
       
       <div className="space-y-4">
         {/* Stripe */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-              <CreditCard className="w-4 h-4 text-blue-600" />
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center shadow-sm">
+              <CreditCard className="w-5 h-5 text-blue-600" />
             </div>
             <div>
               <p className="text-sm font-medium text-gray-900">Card Payments</p>
@@ -51,8 +51,8 @@ export function PaymentSplitCard({
         {/* COD */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-              <Banknote className="w-4 h-4 text-green-600" />
+            <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl flex items-center justify-center shadow-sm">
+              <Banknote className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
               <p className="text-sm font-medium text-gray-900">Cash on Delivery</p>
@@ -73,28 +73,28 @@ export function PaymentSplitCard({
           </div>
           
           {/* Orders bar */}
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div className="flex h-2 rounded-full">
+          <div className="w-full bg-gray-200 rounded-full h-3">
+            <div className="flex h-3 rounded-full">
               <div 
-                className="bg-blue-500 h-2 rounded-l-full" 
+                className="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-l-full" 
                 style={{ width: `${stripeOrderPercentage}%` }}
               />
               <div 
-                className="bg-green-500 h-2 rounded-r-full" 
+                className="bg-gradient-to-r from-emerald-500 to-teal-500 h-3 rounded-r-full" 
                 style={{ width: `${codOrderPercentage}%` }}
               />
             </div>
           </div>
           
           {/* Revenue bar */}
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div className="flex h-2 rounded-full">
+          <div className="w-full bg-gray-200 rounded-full h-3">
+            <div className="flex h-3 rounded-full">
               <div 
-                className="bg-blue-500 h-2 rounded-l-full" 
+                className="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-l-full" 
                 style={{ width: `${stripeRevenuePercentage}%` }}
               />
               <div 
-                className="bg-green-500 h-2 rounded-r-full" 
+                className="bg-gradient-to-r from-emerald-500 to-teal-500 h-3 rounded-r-full" 
                 style={{ width: `${codRevenuePercentage}%` }}
               />
             </div>
