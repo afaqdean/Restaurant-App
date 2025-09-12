@@ -107,7 +107,7 @@ export default function AboutUsSection() {
                 data-aos-anchor="[data-aos-id-3]" 
                 data-aos-delay="600"
               >
-                <div className="relative w-full h-[clamp(200px,40vw,500px)] md:h-[clamp(300px,50vh,600px)] flex items-center justify-center">
+                <div className="relative w-full h-[clamp(527.28px,105.456vw,1318.2px)] md:h-[clamp(790.92px,131.82vh,1581.84px)] flex items-center justify-center">
                   <Image
                     src="/images/culinary_experience.svg"
                     alt="Culinary Experience"
