@@ -43,8 +43,8 @@
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.2",
     "lucide-react": "^0.542.0",
-    "next": "^15.5.2",
-    "next-auth": "^4.24.7",
+    "next": "^15.5.24",
+    "next-auth": "^4.24.15",
     "pdfmake": "^0.2.20",
     "puppeteer": "^24.19.0",
     "react": "^19.1.1",
@@ -68,5 +68,10 @@
     "prisma": "^6.16.0",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "next-auth": {
+      "@auth/core": "^0.41.3"
+    }
   }
 }

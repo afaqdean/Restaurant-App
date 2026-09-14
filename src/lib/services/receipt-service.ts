@@ -105,7 +105,7 @@ export class ReceiptService {
 
       console.log(
         "Receipt data being sent:",
-        JSON.stringify(receiptData, null, 2)
+        JSON.stringify(receiptData, null, 2),
       );
       console.log("Order items from database:", order.items);
 
@@ -123,7 +123,7 @@ export class ReceiptService {
         "src",
         "lib",
         "templates",
-        "receipt-template.html"
+        "receipt-template.html",
       );
       const htmlTemplate = readFileSync(templatePath, "utf8");
 
@@ -133,11 +133,11 @@ export class ReceiptService {
         `<script>
           window.receiptData = ${JSON.stringify(receiptData)};
         </script>
-        <script>`
+        <script>`,
       );
 
       // Set the HTML content
-      await page.setContent(htmlWithData, { waitUntil: "networkidle0" });
+      await page.setContent(htmlWithData, { waitUntil: "load" });
 
       // Generate PDF
       const pdf = await page.pdf({
